@@ -26,33 +26,43 @@ class PaymentService:
         self.logger.info(f'Instanced Payment service')
         self.base_url = os.environ.get('PAYMENT_API_PATH')
 
-    def get_invoices_by_suscription(self,id_suscription):
+    def get_invoices_by_customer(self,customer_id):
         """
-        method to query invoices by suscription to payment services
+        method to query invoices by customer id to payment services
         Args:
-            id_suscription (string): id suscription
+            customer_id (UUID): id customer
         Return:
             invoices (Invoice): list of invoice object
         """
         invoices=[]
         try:
             
-            self.logger.info(f'init consuming api invoices {self.base_url}/invoices?suscription={id_suscription}')
-            response = requests.get(f'{self.base_url}/invoices?suscription={id_suscription}')
-            self.logger.info(f'quering invoices by suscription')
+            self.logger.info(f'init consuming api invoices {self.base_url}/invoices/{customer_id}')
+            response = requests.get(f'{self.base_url}/invoices/{customer_id}')
+            self.logger.info(f'quering invoices by customer')
             if response.status_code == 200:
                 self.logger.info(f'status code 200 queryng invoices on payment services')
                 data = response.json()
                 if data:
-                    self.logger.info(f'there are invoices on payment services {data}')
-                    invoices.append(Invoice(data.get('id'),
-                            data.get('number_id'),
-                            data.get('generated_date'),
-                            data.get('period'),
-                            data.get('mount'),
-                            data.get('state'),
-                            data.get('url_document'),
-                            ))
+                    self.logger.info(f'there are invoices on payment services ')
+                    for item in data:
+
+                        invoices.append(Invoice(item.get('id'),
+                                item.get('customerId'),
+                                item.get('invoiceId'),
+                                item.get('paymentId'),
+                                item.get('amount'),
+                                item.get('tax'),
+                                item.get('totalAmount'),
+                                item.get('subscription'),
+                                item.get('subscriptionId'),
+                                item.get('status'),
+                                item.get('createdAt'),
+                                item.get('updatedAt'),
+                                item.get('generationDate'),                            
+                                item.get('period')                          
+                        ))
+ 
                     self.logger.info(f'deserializing invoice list')
                     return invoices
                     
