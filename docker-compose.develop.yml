@@ -1,5 +1,5 @@
 services:
-  api:
+  bff:
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -17,10 +17,10 @@ services:
       - app_net
 
 
-  networks:
-    bff_net:
-      name: bff_net
-      driver: overlay
-    app_net:
-      name: app_net
-      driver: overlay
+networks:
+  bff_net:
+    name: bff_net
+    driver: bridge
+  app_net:
+    name: app_net
+    driver: bridge
