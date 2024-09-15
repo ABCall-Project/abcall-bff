@@ -4,7 +4,7 @@ from .utils.json_custom_encoder import JSONCustomEncoder
 import requests
 from flaskr import create_app
 from config import Config
-from .endpoint import HealthCheck
+from .endpoint import HealthCheck,InvoiceView
 
 config = Config()
 
@@ -20,3 +20,4 @@ api = Api(app)
 
 #resources
 api.add_resource(HealthCheck, '/health')
+api.add_resource(InvoiceView, '/invoice/<string:id_suscription>')
