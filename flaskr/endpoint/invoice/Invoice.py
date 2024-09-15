@@ -34,30 +34,3 @@ class InvoiceView(Resource):
 
         invoices_list = [invoice.to_dict() for invoice in invoices]
         return invoices_list, HTTPStatus.OK
-
-        # invoice_list=[]
-        # for invoice_item in invoices:
-        #     print(invoice_item.customer_id)
-            
-        #     invoice={
-        #         "id": invoice_item.id,
-        #         "customer_id": str(invoice_item.customer_id),
-        #         "invoice_id": invoice_item.invoice_id,
-        #         "payment_id": invoice_item.payment_id if invoice_item.payment_id else None,
-        #         "amount": invoice_item.amount,
-        #         "tax": invoice_item.tax,
-        #         "total_amount": invoice_item.total_amount,
-        #         "subscription": invoice_item.subscription,
-        #         "subscription_id": str(invoice_item.subscription_id),
-        #         "status": invoice_item.status,
-        #         "created_at": invoice_item.created_at.isoformat() if invoice_item.created_at else None,
-        #         "updated_at": invoice_item.updated_at.isoformat() if invoice_item.updated_at else None,
-        #         "generation_date": invoice_item.generation_date.isoformat() if invoice_item.generation_date else None,
-        #         "period": invoice_item.period if invoice_item.period else None
-
-        #     }
-        #     invoice_list.append(invoice)
-
-            
-            
-        # return jsonify(invoice_list)
