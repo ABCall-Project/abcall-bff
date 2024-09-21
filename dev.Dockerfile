@@ -15,6 +15,6 @@ RUN pip install wheel
 RUN make activate
 RUN make install
 
-EXPOSE 3000
+EXPOSE 3002
 
 ENTRYPOINT ["sh", "./docker/entrypoint.sh"]

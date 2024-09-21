@@ -1,0 +1,60 @@
+###################################
+# abcall-payment-api
+###################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: abcall-bff
+  labels:
+    app: abcall-bff
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: abcall-bff
+  template:
+    metadata:
+      labels:
+        app: abcall-bff
+    spec:
+      containers:
+        - name:  abcall-bff
+          image: abcall.azurecr.io/abcall-bff:1.0.0
+          env:
+            - name: "FLASK_APP"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: FLASK_APP
+            - name: "FLASK_ENV"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: FLASK_ENV
+            - name: "APP_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: APP_NAME
+            - name: "PAYMENT_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: PAYMENT_API_PATH
+          ports:
+            - containerPort: 3002
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: abcall-bff-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: abcall-bff
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
