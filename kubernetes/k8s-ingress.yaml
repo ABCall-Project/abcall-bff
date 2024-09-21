@@ -18,11 +18,11 @@ spec:
           service:
             name: abcall-bff-service
             port: 
-              number: 3005
+              number: 3002
       - pathType: Prefix
         path: /
         backend:
           service:
-            name: abcall-payment-api-service
+            name: abcall-bff-service
             port: 
-              number: 3005
+              number: 3002
