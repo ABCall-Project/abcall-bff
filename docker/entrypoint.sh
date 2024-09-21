@@ -1,1 +1,1 @@
-make run-docker PORT=3000
+make run-docker PORT=3002

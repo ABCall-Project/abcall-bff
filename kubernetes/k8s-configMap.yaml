@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bff-configmap
+data:
+  FLASK_APP: "flaskr/app"
+  FLASK_ENV: "production"
+  APP_NAME: "abcall-bff"
+  PAYMENT_API_PATH: "http://abcall-payment-api-service:3005"
