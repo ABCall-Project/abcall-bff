@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name:  abcall-bff
-          image: abcall.azurecr.io/abcall-bff:1.0.0
+          image: abcall.azurecr.io/abcall-bff:2.0.0
           env:
             - name: "FLASK_APP"
               valueFrom:
@@ -41,6 +41,11 @@ spec:
                 configMapKeyRef:
                   name: bff-configmap
                   key: PAYMENT_API_PATH
+            - name: "URL_REPORTS_SERVICE"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: URL_REPORTS_SERVICE
           ports:
             - containerPort: 3002
           imagePullPolicy: Always

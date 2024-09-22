@@ -39,3 +39,18 @@ docker-dev-up:
 
 docker-dev-down:
 	docker compose -f=docker-compose.develop.yml down
+
+
+kubernetes-up:
+	kubectl apply -f kubernetes/k8s-configMap.yaml
+	kubectl apply -f kubernetes/k8s-deployment.yaml
+	kubectl apply -f kubernetes/k8s-ingress.yaml
+
+kubernetes-dev-up:
+	make kubernetes-dev-up
+	minikube tunnel
+
+kubernetes-dev-down:
+	kubectl delete configMap/bff-configmap
+	kubectl delete deploy/abcall-bff
+	kubectl delete ingress/abcall-bff-ingress
