@@ -4,6 +4,7 @@ from flask import jsonify, request
 from http import HTTPStatus
 from ...service.InvoiceService import *
 from ...models.Invoice import *
+import logging
 
 class InvoiceView(Resource):
     """
