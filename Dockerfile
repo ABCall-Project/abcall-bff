@@ -13,11 +13,13 @@ RUN apk add --no-cache \
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install gunicorn
 
 COPY . /app
 
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 
+EXPOSE 8000
 EXPOSE 3002
 
 COPY ./docker/start.sh /start.sh

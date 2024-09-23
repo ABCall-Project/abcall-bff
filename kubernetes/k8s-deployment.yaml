@@ -1,5 +1,5 @@
 ###################################
-# abcall-payment-api
+# abcall-bff
 ###################################
 apiVersion: apps/v1
 kind: Deployment
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name:  abcall-bff
-          image: abcall.azurecr.io/abcall-bff:2.0.0
+          image: abcall.azurecr.io/abcall-bff:2.0.3
           env:
             - name: "FLASK_APP"
               valueFrom:

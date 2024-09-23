@@ -19,10 +19,3 @@ spec:
             name: abcall-bff-service
             port: 
               number: 3002
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: abcall-bff-service
-            port: 
-              number: 3002
