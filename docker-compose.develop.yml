@@ -1,0 +1,26 @@
+services:
+  bff:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    container_name: abcall-bff-local-api
+    restart: always
+    volumes:
+      - ".:/app"
+    ports:
+      - "5002:3002"
+    env_file:
+      - .env.local
+    tty: true
+    networks:
+      - bff_net
+      - app_net
+
+
+networks:
+  bff_net:
+    name: bff_net
+    driver: bridge
+  app_net:
+    name: app_net
+    driver: bridge
