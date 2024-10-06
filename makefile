@@ -18,6 +18,15 @@ run:
 		flask run -p $(PORT); \
 	fi
 
+run-tests:
+	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
+
+run-tests-coverage:
+	 coverage run -m unittest discover
+	 coverage report -m
+	 coverage html
+	 coverage report --fail-under=50
+
 run-docker:
 ifeq ($(strip $(PORT)),)
 	flask run -h 0.0.0.0
