@@ -3,3 +3,6 @@ venv
 __pycache__
 data
 .DS_Store
+reports
+.coverage
+htmlcov
