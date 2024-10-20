@@ -21,9 +21,9 @@ class InvoiceDetail:
             'detail': str(self.detail),
             'amount': str(self.amount),
             'tax': str(self.tax),
-            'total_amount': str(self.total_amount),
-            'issue_id': str(self.issue_id),
-            'chanel_plan_id': str(self.chanel_plan_id),
-            'invoice_id': str(self.invoice_id),
-            'issue_date': self.issue_date
+            'totalAmount': str(self.total_amount),
+            'issueId': str(self.issue_id),
+            'chanelPlanId': str(self.chanel_plan_id),
+            'invoiceId': str(self.invoice_id),
+            'issueDate': self.issue_date if self.issue_date else None
         }

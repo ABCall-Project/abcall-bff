@@ -50,15 +50,17 @@ class PaymentService:
                         invoices.append(Invoice(item.get('id'),
                                 item.get('customerId'),
                                 item.get('invoiceId'),
-                                item.get('plan_id'),
+                                item.get('planId'),
                                 item.get('amount'),
                                 item.get('tax'),
                                 item.get('totalAmount'),
                                 item.get('status'),
                                 item.get('createdAt'),
-                                item.get('start_at'),
+                                item.get('startAt'),
                                 item.get('generationDate'),                            
-                                item.get('end_at')                          
+                                item.get('endAt'),
+                                item.get('plan_amount'),
+                                item.get('issues_amount'),                          
                         ))
  
                     self.logger.info(f'deserializing invoice list')
@@ -135,14 +137,15 @@ class PaymentService:
 
                         invoices_details.append(InvoiceDetail(item.get('id'),
                                 item.get('detail'),
+                                item.get('invoice_id'),
+                                item.get('issue_id'),
                                 item.get('amount'),
                                 item.get('tax'),
                                 item.get('total_amount'),
-                                item.get('issue_id'),
                                 item.get('chanel_plan_id'),
-                                item.get('invoice_id'),
                                 item.get('issue_date')               
                         ))
+
  
                     self.logger.info(f'deserializing invoice detail list')
                     return invoices_details
