@@ -5,11 +5,13 @@ import requests
 from flaskr import create_app
 from config import Config
 from .endpoint import HealthCheck,InvoiceView,ReportView
+from flask_cors import CORS
 
 config = Config()
 
 
 app = create_app('default')
+CORS(app)
 app.json_encoder = JSONCustomEncoder
 
 app_context = app.app_context()
