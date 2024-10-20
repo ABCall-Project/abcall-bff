@@ -4,7 +4,7 @@ from .utils.json_custom_encoder import JSONCustomEncoder
 import requests
 from flaskr import create_app
 from config import Config
-from .endpoint import HealthCheck,InvoiceView,ReportView
+from .endpoint import HealthCheck,InvoiceView,ReportView,IssueView
 from flask_cors import CORS
 
 config = Config()
@@ -24,3 +24,4 @@ api = Api(app)
 api.add_resource(HealthCheck, '/health')
 api.add_resource(InvoiceView, '/invoices/<string:action>')
 api.add_resource(ReportView, '/invoice/<string:invoice_id>')
+api.add_resource(IssueView, '/issues/<string:action>')
