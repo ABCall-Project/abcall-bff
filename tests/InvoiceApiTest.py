@@ -16,16 +16,16 @@ class InvoiceViewTestCase(TestCase):
         api.add_resource(InvoiceView, '/invoices/<string:action>')
         return app
 
-    @patch('flaskr.endpoint.invoice.PaymentService') 
+    @patch('flaskr.endpoint.invoice.Invoice.PaymentService') 
     def test_get_invoices_success(self, mock_payment_service):
         mock_service = mock_payment_service.return_value
         mock_service.get_invoices_by_customer.return_value = [MagicMock(to_dict=lambda: {"id": "123", "total": 100})]
 
         with self.client:
             response = self.client.get('/invoices/getInvoices', query_string={'customer_id': '12345'})
-            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @patch('flaskr.endpoint.invoice.PaymentService')
+    @patch('flaskr.endpoint.invoice.Invoice.PaymentService')
     def test_get_invoices_not_found(self, mock_payment_service):
         mock_service = mock_payment_service.return_value
         mock_service.get_invoices_by_customer.return_value = []
@@ -35,7 +35,7 @@ class InvoiceViewTestCase(TestCase):
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
 
-    @patch('flaskr.endpoint.invoice.PaymentService')
+    @patch('flaskr.endpoint.invoice.Invoice.PaymentService')
     def test_get_total_cost_pending_success(self, mock_payment_service):
         mock_service = mock_payment_service.return_value
         mock_service.get_total_cost_pending.return_value = 150.75
@@ -55,7 +55,7 @@ class InvoiceViewTestCase(TestCase):
     #         self.assertEqual(response.status_code, HTTPStatus.OK)
  
 
-    @patch('flaskr.endpoint.invoice.PaymentService')
+    @patch('flaskr.endpoint.invoice.Invoice.PaymentService')
     def test_get_list_details_invoice_by_id_error(self, mock_payment_service):
         mock_service = mock_payment_service.return_value
         mock_service.get_invoice_details.side_effect = Exception("Some error")
