@@ -5,4 +5,4 @@ This is the backend for frontend artifact make with python 🐍 with flask 🌶�
 [![Python](https://img.shields.io/badge/python-2b5b84?style=for-the-badge&logo=python&logoColor=white&labelColor=000000)]()
 [![Flask](https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white&labelColor=000000)]()
 
-https://github.com/abcall-project/abcall-bff/actions/workflows/action.yaml/badge.svg
+![Pipeline](https://github.com/abcall-project/abcall-bff/actions/workflows/action.yaml/badge.svg)

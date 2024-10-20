@@ -3,3 +3,5 @@ Flask-RESTful==0.3.10
 python-dotenv==1.0.0
 requests
 coverage==5.3
+flask-cors
+Flask-Testing
