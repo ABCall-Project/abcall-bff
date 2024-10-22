@@ -41,29 +41,28 @@ class IssueView(Resource):
             return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
     def getIssuesDasboard(self):
-        """
-        This method is to query issues for a customer with optional filters.
+        try:
+            self.logger.info(f'Receive request to get issues dashboard')
 
-        Args: 
-            customer_id (UUID): customer id
-        Returns:
-            JSON response containing the issues or an error message.
-        """
-        customer_id = request.args.get('customer_id')
+            customer_id = request.args.get('customer_id')
+            status = request.args.get('status')
+            channel_plan_id = request.args.get('channel_plan_id')
+            created_at = request.args.get('created_at')
+            closed_at = request.args.get('closed_at')
 
-        self.logger.info(f'Receiving request to query issues for customer id: {customer_id}')
+            issues = self.issue_service.get_issues_dashboard(
+                customer_id=customer_id,
+                status=status,
+                channel_plan_id=channel_plan_id,
+                created_at=created_at,
+                closed_at=closed_at
+            )
 
-        issues = self.issue_service.get_issues_dashboard(
-            customer_id=customer_id,
-            status=request.args.get('status'),
-            channel_plan_id=request.args.get('channel_plan_id'),
-            created_at=request.args.get('created_at'),
-            closed_at=request.args.get('closed_at')
-        )
+            if not issues:
+                return {"message": "No issues found"}, HTTPStatus.NOT_FOUND
 
-        if not issues:
-            return {"message": "No issues found"}, HTTPStatus.NOT_FOUND
+            return issues, HTTPStatus.OK
 
-        issues_list = [issue.to_dict() for issue in issues]
-
-        return issues_list, HTTPStatus.OK
+        except Exception as ex:
+            self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
+            return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
