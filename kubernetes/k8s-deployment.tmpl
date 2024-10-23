@@ -46,6 +46,11 @@ spec:
                 configMapKeyRef:
                   name: bff-configmap
                   key: URL_REPORTS_SERVICE
+            - name: "ISSUE_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: bff-configmap
+                  key: ISSUE_API_PATH
           ports:
             - containerPort: 3002
           imagePullPolicy: Always
