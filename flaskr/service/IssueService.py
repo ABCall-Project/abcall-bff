@@ -26,9 +26,6 @@ class IssueService:
         self.logger = logging.getLogger('default')
         self.logger.info(f'Instanced issue service')
         self.base_url = os.environ.get('ISSUE_API_PATH')
-
-    
-        
     
     def get_answer_ai(self,question):
         """
@@ -62,3 +59,27 @@ class IssueService:
             self.logger.info(f"Error comunication with open ai: {str(e)}")
             return None
         
+    def get_issues_dashboard(self, customer_id, status=None, channel_plan_id=None, created_at=None, closed_at=None):
+        """
+        Method to retrieve issues from the dashboard using optional filters.
+        """
+        try:
+            url = f'{self.base_url}/issue/getIssuesDasboard'
+            params = {
+                'customer_id': customer_id,
+                'status': status,
+                'channel_plan_id': channel_plan_id,
+                'created_at': created_at,
+                'closed_at': closed_at
+            }
+            params = {key: value for key, value in params.items() if value is not None}
+            response = requests.get(url, params=params)
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue dashboard service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue dashboard service: {str(e)}')
+            return None
