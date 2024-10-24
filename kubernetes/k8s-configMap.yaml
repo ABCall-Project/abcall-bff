@@ -7,5 +7,5 @@ data:
   FLASK_ENV: "production"
   APP_NAME: "abcall-bff"
   PAYMENT_API_PATH: "http://abcall-payment-api-service:3005"
-  URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008/"
-  ISSUE_API_PATH: "http://api-issue-api-service:3007/"
+  URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008"
+  ISSUE_API_PATH: "http://api-issues-api-service:3007"
