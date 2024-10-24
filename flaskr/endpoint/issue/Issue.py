@@ -21,7 +21,7 @@ class IssueView(Resource):
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
-        if action == 'getIssuesDasboard':
+        elif action == 'getIssuesDasboard':
             return self.getIssuesDasboard()
         else:
             return {"message": "Action not found"}, 404
