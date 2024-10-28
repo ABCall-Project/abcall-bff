@@ -41,7 +41,6 @@ class PaymentService:
             self.logger.info(f'init consuming api invoices {self.base_url}/invoices/getInvoices?customer_id={customer_id}')
             response = requests.get(f'{self.base_url}/invoices/getInvoices?customer_id={customer_id}')
             self.logger.info(f'quering invoices by customer')
-            print(response.status_code)
             if response.status_code == 200:
                 self.logger.info(f'status code 200 queryng invoices on payment services')
                 data = response.json()

@@ -62,7 +62,7 @@ class InvoiceTestCase(unittest.TestCase):
         self.assertEqual(response.json["message"], error_message)
 
     @patch("flaskr.service.InvoiceService.requests.get")
-    def test_should_return_a_invoice_list(self, get_mock):
+    def test_should_return_a_invoice_details_list(self, get_mock):
         invoice_mock = InvoiceDetailResponseBuilder().build()
         invoices_mocked = []
         invoices_mocked.append(invoice_mock)
