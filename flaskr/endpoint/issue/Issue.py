@@ -23,6 +23,8 @@ class IssueView(Resource):
             return self.getIAResponse()
         elif action == 'getIssuesDashboard':
             return self.getIssuesDashboard()
+        elif action == 'find':
+            return self.get_issue_by_user_id()
         else:
             return {"message": "Action not found"}, 404
 
@@ -67,19 +69,22 @@ class IssueView(Resource):
             self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
             return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
         
+    def get_issue_by_user_id(self):
+        try:
+            user_id = request.args.get('user_id')
+            page = int(request.args.get('page'))
+            limit = int(request.args.get('limit'))
 
-class IssuesView(Resource):
-    def __init__(self):
-        self.issue_service = IssueService()
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger('default')
+            self.logger.info(f'Receiving issue list by user {user_id}')
 
-    def get(self, action=None):
-        if action == 'find':
-            return self.getIAResponse()
-        elif action == 'getIssuesDashboard':
-            return self.getIssuesDashboard()
-        else:
-            return {"message": "Action not found"}, 404
+            issues = self.issue_service.get_issue_by_user_id(user_id=user_id, page=page, limit=limit)
+
+            if issues:
+                return issues, HTTPStatus.OK
+            
+            return [], HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')
+            return {"message": "Some error ocurred trying to get issues by user id"}, HTTPStatus.INTERNAL_SERVER_ERROR
         
-    # def get_issue_by_user_id(self, issue)
