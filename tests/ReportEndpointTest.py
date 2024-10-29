@@ -14,7 +14,7 @@ class ReportViewTestCase(unittest.TestCase):
         self.api.add_resource(ReportView, '/invoice/<string:invoice_id>')
         self.client = self.app.test_client()
 
-    @patch('flaskr.service.ReportService.ReportService.download_invoice_by_id')
+    @patch('flaskr.service.ReportService.download_invoice_by_id')
     def test_get_invoice_success(self, mock_download_invoice):
         # Configuramos el mock para que devuelva contenido de bytes
         mock_download_invoice.return_value = BytesIO(b'PDF content of invoice')
@@ -27,7 +27,7 @@ class ReportViewTestCase(unittest.TestCase):
         self.assertIn(b'PDF content of invoice', response.data)
         self.assertEqual(response.headers['Content-Disposition'], f'attachment; filename=invoice-{invoice_id}.pdf')
 
-    @patch('flaskr.service.ReportService.ReportService.download_invoice_by_id')
+    @patch('flaskr.service.ReportService.download_invoice_by_id')
     def test_get_invoice_not_found(self, mock_download_invoice):
         # Configuramos el mock para que devuelva None, simulando que no se encontró la factura
         mock_download_invoice.return_value = None
@@ -38,7 +38,7 @@ class ReportViewTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
 
-    @patch('flaskr.service.ReportService.ReportService.download_invoice_by_id')
+    @patch('flaskr.service.ReportService.download_invoice_by_id')
     def test_get_invoice_internal_error(self, mock_download_invoice):
         # Simulamos una excepción en el servicio
         mock_download_invoice.side_effect = Exception('Service error')
