@@ -2,7 +2,8 @@ from unittest.mock import patch, MagicMock
 import unittest
 from http import HTTPStatus
 from flaskr.app import app
-from builder import InvoiceResponseBuilder,InvoiceDetailResponseBuilder
+from builder import InvoiceResponseBuilder,InvoiceDetailResponseBuilder, IAResponseBuilder
+from faker import Faker
 
 class InvoiceTestCase(unittest.TestCase):
     @classmethod
@@ -72,3 +73,15 @@ class InvoiceTestCase(unittest.TestCase):
         response = self.client.get(f'/invoices/getListDetailsInvoiceById?invoice_id={invoice_mock["invoiceId"]}')
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    @patch("flaskr.service.InvoiceService.requests.get")
+    def test_should_get_information_from_ai(self, get_mock):
+        faker = Faker()
+        answer_response = IAResponseBuilder().with_answer(faker.sentence()).build()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = answer_response
+
+        response = self.client.get(f'/invoices/getIAResponse')
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.json["answer"], answer_response["answer"])

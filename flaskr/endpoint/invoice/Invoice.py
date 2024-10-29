@@ -62,7 +62,6 @@ class InvoiceView(Resource):
     def get_total_cost_pending(self):
 
         try:
-           
             customer_id = request.args.get('customer_id')
             self.logger.info(f'Receive request to get total cost of customer_id {customer_id}')
             total_cost = self.payment_service.get_total_cost_pending(customer_id)
@@ -90,7 +89,6 @@ class InvoiceView(Resource):
 
     def getIAResponse(self):
         try:
-
             self.logger.info(f'Receive request to ask to open ai')
             question = request.args.get('question')
             answer=self.issue_service.get_answer_ai(question)
