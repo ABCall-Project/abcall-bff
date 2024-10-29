@@ -21,8 +21,8 @@ class IssueView(Resource):
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
-        elif action == 'getIssuesDasboard':
-            return self.getIssuesDasboard()
+        elif action == 'getIssuesDashboard':
+            return self.getIssuesDashboard()
         else:
             return {"message": "Action not found"}, 404
 
@@ -40,7 +40,7 @@ class IssueView(Resource):
             self.logger.error(f'Some error occurred trying ask open ai: {ex}')
             return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def getIssuesDasboard(self):
+    def getIssuesDashboard(self):
         try:
             self.logger.info(f'Receive request to get issues dashboard')
 
@@ -67,3 +67,19 @@ class IssueView(Resource):
             self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
             return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
         
+
+class IssuesView(Resource):
+    def __init__(self):
+        self.issue_service = IssueService()
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger('default')
+
+    def get(self, action=None):
+        if action == 'find':
+            return self.getIAResponse()
+        elif action == 'getIssuesDashboard':
+            return self.getIssuesDashboard()
+        else:
+            return {"message": "Action not found"}, 404
+        
+    # def get_issue_by_user_id(self, issue)

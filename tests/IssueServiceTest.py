@@ -20,15 +20,13 @@ class IssueServiceTestCase(unittest.TestCase):
         self.assertIsNone(issues)
 
     @patch('requests.get')
-    def test_return_none_if_some_exception_error_occurred(self, get_mock):
+    def test_return_an_error_if_some_exception_error_occurred(self, get_mock):
         fake = Faker()
         user_id = fake.uuid4()
         issueService = IssueService()
         get_mock.return_value = SystemError("Some weird error ocurred 🤯")
 
-        issues = issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10)
-
-        self.assertIsNone(issues)
+        self.assertRaises(issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10))
 
     @patch('requests.get')
     def test_return_a_list_of_issue_for_pagination(self, get_mock):

@@ -64,7 +64,7 @@ class IssueService:
         Method to retrieve issues from the dashboard using optional filters.
         """
         try:
-            url = f'{self.base_url}/issue/getIssuesDasboard'
+            url = f'{self.base_url}/issue/getIssuesDashboard'
             params = {
                 'customer_id': customer_id,
                 'status': status,
@@ -102,4 +102,4 @@ class IssueService:
                 return None
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
-            return None
+            raise e

@@ -30,8 +30,8 @@ class InvoiceView(Resource):
             return self.get_list_details_invoice_by_id()
         elif action == 'getIAResponse':
             return self.getIAResponse()
-        elif action == 'getIssuesDasboard':
-            return self.getIssuesDasboard()
+        elif action == 'getIssuesDashboard':
+            return self.getIssuesDashboard()
         else:
             return {"message": "Action not found"}, 404
 
@@ -100,7 +100,7 @@ class InvoiceView(Resource):
             self.logger.error(f'Some error occurred trying ask open ai: {ex}')
             return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def getIssuesDasboard(self):
+    def getIssuesDashboard(self):
         try:
             self.logger.info(f'Receive request to get issues dashboard')
 
