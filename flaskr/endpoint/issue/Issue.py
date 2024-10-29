@@ -66,3 +66,4 @@ class IssueView(Resource):
         except Exception as ex:
             self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
             return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        

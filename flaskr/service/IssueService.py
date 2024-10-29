@@ -83,3 +83,23 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue dashboard service: {str(e)}')
             return None
+        
+    def get_issue_by_user_id(self, user_id:str, page:int, limit:int):
+        try:
+            url = f'{self.base_url}/issues/find'
+            params = {
+                'user_id': user_id,
+                'page': page,
+                'limit': limit
+            }
+            params = {key: value for key, value in params.items() if value is not None}
+            response = requests.get(url, params=params)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            return None
