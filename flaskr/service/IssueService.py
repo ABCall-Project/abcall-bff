@@ -103,3 +103,36 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+
+
+    def get_ia_predictive_answer(self,user_id):
+        """
+        method to ask predictive analitic
+        Args:
+            user_id (str): id user to build de context
+        Return:
+            answer (str): answer about ask
+        """
+        answer=''
+        try:
+            self.logger.info(f'init consuming api predictive ia {self.base_url}/issue/getIAPredictiveAnswer?user_id={user_id}')
+            response = requests.get(f'{self.base_url}/issue/getIAPredictiveAnswer?user_id={user_id}')
+            self.logger.info(f'quering predictive ia')
+            if response.status_code == 200:
+                self.logger.info(f'status code 200 quering predictive ia')
+                data = response.json()
+                if data:
+                    self.logger.info(f'there are answer response ')
+                    answer=data.get('answer')
+
+                    return answer
+                    
+                else:
+                    self.logger.info(f'there arent response')
+                    return None
+            else:
+                self.logger.info(f"error consuming predictive ia: {response.status_code}")
+                return None
+        except Exception as e:
+            self.logger.info(f"Error comunication with predictive ia: {str(e)}")
+            return None
