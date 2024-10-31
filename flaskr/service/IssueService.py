@@ -8,6 +8,7 @@ import os
 import logging
 from ..models.Invoice import Invoice
 from ..models.invoice_detail import InvoiceDetail
+from .adapters.issue_mappers import issues_pagination_mapper
 
 class IssueService:
     """
@@ -86,9 +87,8 @@ class IssueService:
         
     def get_issue_by_user_id(self, user_id:str, page:int, limit:int):
         try:
-            url = f'{self.base_url}/issues/find'
+            url = f'{self.base_url}/issues/find/{user_id}'
             params = {
-                'user_id': user_id,
                 'page': page,
                 'limit': limit
             }
@@ -96,7 +96,7 @@ class IssueService:
             response = requests.get(url, params=params)
 
             if response.status_code == HTTPStatus.OK:
-                return response.json()
+                return issues_pagination_mapper(response.json())
             else:
                 self.logger.error(f'Error querying issue service: {response.status_code}')
                 return None

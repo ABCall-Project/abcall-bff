@@ -30,7 +30,6 @@ class IssueView(Resource):
 
     def getIAResponse(self):
         try:
-
             self.logger.info(f'Receive request to ask to open ai')
             question = request.args.get('question')
             answer=self.issue_service.get_answer_ai(question)
@@ -75,6 +74,7 @@ class IssueView(Resource):
             page = int(request.args.get('page'))
             limit = int(request.args.get('limit'))
 
+
             self.logger.info(f'Receiving issue list by user {user_id}')
 
             issues = self.issue_service.get_issue_by_user_id(user_id=user_id, page=page, limit=limit)
@@ -82,7 +82,7 @@ class IssueView(Resource):
             if issues:
                 return issues, HTTPStatus.OK
             
-            return [], HTTPStatus.NOT_FOUND
+            return {}, HTTPStatus.NOT_FOUND
 
         except Exception as ex:
             self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: dev.Dockerfile
-    container_name: abcall-bff-local-api
+    container_name: abcall-local-bff
     restart: always
     volumes:
       - ".:/app"
@@ -41,18 +41,20 @@ services:
       - app_net 
   db:
     build:
-      context: ../abcall-issues-api/.
-      dockerfile: ../abcall-issues-api/db.Dockerfile
+      context: .
+      dockerfile: db.Dockerfile
     env_file:
-      - ../abcall-issues-api/.env.db
+      - .env.db
     container_name: issues-local-db
     volumes:
-      - "./data/postgresql:/var/lib/postgresql"
+      - "pg_data:/var/lib/postgresql/data"
       - "./docker/postgresql:/docker-entrypoint-initdb.d"
     ports:
       - "5433:5432"
     networks:
       - issues_net
+volumes:
+  pg_data:
 
 
 networks:
