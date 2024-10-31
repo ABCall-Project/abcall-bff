@@ -1,21 +1,18 @@
-import unittest
 from unittest.mock import patch
-from flask import Flask
-from flask_restful import Api
+import unittest
 from http import HTTPStatus
-from flaskr.endpoint.healthCheck.HealthCheck import HealthCheck
+from flaskr.app import app
 
-class TestHealthCheck(unittest.TestCase):
-
-    def setUp(self):
-
-        self.app = Flask(__name__)
-        self.api = Api(self.app)
-        self.api.add_resource(HealthCheck, '/healthcheck')
-        self.client = self.app.test_client()  
-
+class HealthCheckTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.client = app.test_client()
+        app.testing = True
+    
     def test_get_healthcheck(self):
-        response = self.client.get('/healthcheck')
+        response = self.client.get('/health')
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-
+        self.assertEqual(response.json["environment"], "test")
+        self.assertEqual(response.json["application"], "abcall-bff")
+        self.assertEqual(response.json["status"], HTTPStatus.OK)

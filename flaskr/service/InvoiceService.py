@@ -65,7 +65,6 @@ class PaymentService:
  
                     self.logger.info(f'deserializing invoice list')
                     return invoices
-                    
                 else:
                     self.logger.info(f'there arent invoices')
                     return None

@@ -28,6 +28,10 @@ class InvoiceView(Resource):
             return self.get_total_cost_pending()
         elif action=='getListDetailsInvoiceById':
             return self.get_list_details_invoice_by_id()
+        elif action == 'getIAResponse':
+            return self.getIAResponse()
+        elif action == 'getIssuesDashboard':
+            return self.getIssuesDashboard()
         else:
             return {"message": "Action not found"}, 404
 
@@ -58,7 +62,6 @@ class InvoiceView(Resource):
     def get_total_cost_pending(self):
 
         try:
-           
             customer_id = request.args.get('customer_id')
             self.logger.info(f'Receive request to get total cost of customer_id {customer_id}')
             total_cost = self.payment_service.get_total_cost_pending(customer_id)
@@ -83,3 +86,43 @@ class InvoiceView(Resource):
         except Exception as ex:
             self.logger.error(f'Some error occurred trying to get invoice details: {ex}')
             return {'message': 'Something was wrong trying to get invoice details'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def getIAResponse(self):
+        try:
+            self.logger.info(f'Receive request to ask to open ai')
+            question = request.args.get('question')
+            answer=self.issue_service.get_answer_ai(question)
+            return {
+                'answer': answer
+            }, HTTPStatus.OK
+            
+        except Exception as ex:
+            self.logger.error(f'Some error occurred trying ask open ai: {ex}')
+            return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def getIssuesDashboard(self):
+        try:
+            self.logger.info(f'Receive request to get issues dashboard')
+
+            customer_id = request.args.get('customer_id')
+            status = request.args.get('status')
+            channel_plan_id = request.args.get('channel_plan_id')
+            created_at = request.args.get('created_at')
+            closed_at = request.args.get('closed_at')
+
+            issues = self.issue_service.get_issues_dashboard(
+                customer_id=customer_id,
+                status=status,
+                channel_plan_id=channel_plan_id,
+                created_at=created_at,
+                closed_at=closed_at
+            )
+
+            if not issues:
+                return {"message": "No issues found"}, HTTPStatus.NOT_FOUND
+
+            return issues, HTTPStatus.OK
+
+        except Exception as ex:
+            self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
+            return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
