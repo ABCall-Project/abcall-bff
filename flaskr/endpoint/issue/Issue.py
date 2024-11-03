@@ -108,15 +108,12 @@ class IssueView(Resource):
             return {'message': 'Something was wrong trying ask predictive ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
     def get_issue_detail(self):
-            try:
-                # Obtener `customer_id` e `issue_id` de los parámetros de la solicitud
-                customer_id = request.args.get('customer_id')
+            try:        
                 issue_id = request.args.get('issue_id')
 
-                self.logger.info(f'Receive request to get issue detail for customer_id {customer_id} and issue_id {issue_id}')
-
-                # Llamar al servicio para obtener el detalle del issue
-                issue_detail = self.issue_service.get_issue_detail(customer_id=customer_id, issue_id=issue_id)
+                self.logger.info(f'Receive request to get issue detail for issue_id {issue_id}')
+                            
+                issue_detail = self.issue_service.get_issue_detail(issue_id=issue_id)
 
                 if issue_detail:
                     return issue_detail, HTTPStatus.OK

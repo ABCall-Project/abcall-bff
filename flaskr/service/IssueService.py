@@ -138,11 +138,10 @@ class IssueService:
             self.logger.info(f"Error comunication with predictive ia: {str(e)}")
             return None
 
-    def get_issue_detail(self, customer_id: str, issue_id: str) -> Optional[dict]:
+    def get_issue_detail(self, issue_id: str) -> Optional[dict]:
         try:
             url = f'{self.base_url}/issue/get_issue_by_id'
-            params = {
-                'customer_id': customer_id,
+            params = {                
                 'issue_id': issue_id
             }
             response = requests.get(url, params=params)
