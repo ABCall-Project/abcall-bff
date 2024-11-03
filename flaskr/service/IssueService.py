@@ -27,7 +27,7 @@ class IssueService:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
         self.logger.info(f'Instanced issue service')
-        self.base_url = os.environ.get('ISSUE_API_PATH')
+        self.base_url = os.environ.get('ISSUE_API_PATH')        
     
     def get_answer_ai(self,question):
         """
@@ -66,7 +66,7 @@ class IssueService:
         Method to retrieve issues from the dashboard using optional filters.
         """
         try:
-            url = f'{self.base_url}/issue/getIssuesDashboard'
+            url = f'{self.base_url}/issue/getIssuesDasboard'
             params = {
                 'customer_id': customer_id,
                 'status': status,
