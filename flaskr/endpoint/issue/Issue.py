@@ -27,6 +27,8 @@ class IssueView(Resource):
             return self.getIssuesDasboard()
         elif action=='getIAPredictiveAnswer':
             return self.get_ia_predictive_answer()
+        elif action=='get_issue_by_id':
+            return self.get_issue_detail()
         else:
             return {"message": "Action not found"}, 404
 
@@ -104,3 +106,23 @@ class IssueView(Resource):
         except Exception as ex:
             self.logger.error(f'Some error occurred trying ask predictive ai: {ex}')
             return {'message': 'Something was wrong trying ask predictive ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def get_issue_detail(self):
+            try:
+                # Obtener `customer_id` e `issue_id` de los parámetros de la solicitud
+                customer_id = request.args.get('customer_id')
+                issue_id = request.args.get('issue_id')
+
+                self.logger.info(f'Receive request to get issue detail for customer_id {customer_id} and issue_id {issue_id}')
+
+                # Llamar al servicio para obtener el detalle del issue
+                issue_detail = self.issue_service.get_issue_detail(customer_id=customer_id, issue_id=issue_id)
+
+                if issue_detail:
+                    return issue_detail, HTTPStatus.OK
+                else:
+                    return {"message": "Issue not found"}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error occurred trying to get issue detail: {ex}')
+                return {'message': 'Something went wrong trying to get issue detail'}, HTTPStatus.INTERNAL_SERVER_ERROR
