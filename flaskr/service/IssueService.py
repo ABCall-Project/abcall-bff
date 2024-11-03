@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Optional
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from http import HTTPStatus
@@ -136,3 +137,21 @@ class IssueService:
         except Exception as e:
             self.logger.info(f"Error comunication with predictive ia: {str(e)}")
             return None
+
+    def get_issue_detail(self, customer_id: str, issue_id: str) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/get_issue_by_id'
+            params = {
+                'customer_id': customer_id,
+                'issue_id': issue_id
+            }
+            response = requests.get(url, params=params)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
