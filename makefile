@@ -3,10 +3,16 @@ activate:
         echo "Python 🐍 environment was activated"; \
     else \
         echo "The folder environment doesn't exist"; \
-				python3 -m venv venv; \
+		python -m venv venv; \
         echo "The environment folder was created and the python 🐍 environment was activated"; \
     fi
-	. ./venv/bin/activate
+	if [ -f "./venv/bin/activate" ]; then \
+        . ./venv/bin/activate; \
+    elif [ -f "./venv/Scripts/activate" ]; then \
+        . ./venv/Scripts/activate; \
+    else \
+        echo "Could not activate the Python environment"; \
+    fi
 
 install:
 	pip3 install -r requirements.txt
