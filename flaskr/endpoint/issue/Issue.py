@@ -21,14 +21,17 @@ class IssueView(Resource):
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
+        elif action == 'find':
+            return self.get_issue_by_user_id()
         elif action == 'getIssuesDasboard':
             return self.getIssuesDasboard()
+        elif action=='getIAPredictiveAnswer':
+            return self.get_ia_predictive_answer()
         else:
             return {"message": "Action not found"}, 404
 
     def getIAResponse(self):
         try:
-
             self.logger.info(f'Receive request to ask to open ai')
             question = request.args.get('question')
             answer=self.issue_service.get_answer_ai(question)
@@ -66,3 +69,38 @@ class IssueView(Resource):
         except Exception as ex:
             self.logger.error(f'Some error occurred trying to get issues dashboard: {ex}')
             return {'message': 'Something went wrong trying to get issues dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+    def get_issue_by_user_id(self):
+        try:
+            user_id = request.args.get('user_id')
+            page = int(request.args.get('page'))
+            limit = int(request.args.get('limit'))
+
+
+            self.logger.info(f'Receiving issue list by user {user_id}')
+
+            issues = self.issue_service.get_issue_by_user_id(user_id=user_id, page=page, limit=limit)
+
+            if issues:
+                return issues, HTTPStatus.OK
+            
+            return {}, HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')
+            return {"message": "Some error ocurred trying to get issues by user id"}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+
+    def get_ia_predictive_answer(self):
+        try:
+
+            self.logger.info(f'Receive request to ask to predictive ai')
+            user_id = request.args.get('user_id')
+            answer=self.issue_service.get_ia_predictive_answer(user_id)
+            return {
+                'answer': answer
+            }, HTTPStatus.OK
+            
+        except Exception as ex:
+            self.logger.error(f'Some error occurred trying ask predictive ai: {ex}')
+            return {'message': 'Something was wrong trying ask predictive ai'}, HTTPStatus.INTERNAL_SERVER_ERROR

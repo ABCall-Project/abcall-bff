@@ -30,8 +30,8 @@ class InvoiceView(Resource):
             return self.get_list_details_invoice_by_id()
         elif action == 'getIAResponse':
             return self.getIAResponse()
-        elif action == 'getIssuesDasboard':
-            return self.getIssuesDasboard()
+        elif action == 'getIssuesDashboard':
+            return self.getIssuesDashboard()
         else:
             return {"message": "Action not found"}, 404
 
@@ -62,7 +62,6 @@ class InvoiceView(Resource):
     def get_total_cost_pending(self):
 
         try:
-           
             customer_id = request.args.get('customer_id')
             self.logger.info(f'Receive request to get total cost of customer_id {customer_id}')
             total_cost = self.payment_service.get_total_cost_pending(customer_id)
@@ -90,7 +89,6 @@ class InvoiceView(Resource):
 
     def getIAResponse(self):
         try:
-
             self.logger.info(f'Receive request to ask to open ai')
             question = request.args.get('question')
             answer=self.issue_service.get_answer_ai(question)
@@ -102,7 +100,7 @@ class InvoiceView(Resource):
             self.logger.error(f'Some error occurred trying ask open ai: {ex}')
             return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def getIssuesDasboard(self):
+    def getIssuesDashboard(self):
         try:
             self.logger.info(f'Receive request to get issues dashboard')
 
