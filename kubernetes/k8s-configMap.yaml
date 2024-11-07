@@ -9,3 +9,4 @@ data:
   PAYMENT_API_PATH: "http://abcall-payment-api-service:3005"
   URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008"
   ISSUE_API_PATH: "http://abcall-issues-api-service:3007"
+  CUSTOMER_API_PATH: "http://abcall-customer-api-service:3003/"

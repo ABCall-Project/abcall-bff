@@ -14,4 +14,5 @@ class Config:
 
         self.ENVIRONMENT = environment
         self.APP_NAME=os.getenv('APP_NAME')
-        self.URL_REPORTS_SERVICE=os.getenv('URL_REPORTS_SERVICE')        
+        self.URL_REPORTS_SERVICE=os.getenv('URL_REPORTS_SERVICE')
+        self.CUSTOMER_API_PATH=os.getenv('CUSTOMER_API_PATH')
