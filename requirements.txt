@@ -6,3 +6,4 @@ coverage==5.3
 flask-cors
 Flask-Testing
 Faker
+PyJWT

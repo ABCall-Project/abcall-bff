@@ -4,6 +4,7 @@ import requests
 from http import HTTPStatus
 from  config import Config
 
+
 config = Config()
 
 class HealthCheck(Resource):
