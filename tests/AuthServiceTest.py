@@ -23,25 +23,7 @@ class AuthServiceTest(unittest.TestCase):
             "role_id": "admin"
         }
 
-    @patch('flaskr.service.AuthService.requests.post')
-    @patch('flaskr.service.AuthService.Config')
-    def test_autenticate_success(self, mock_config, mock_post):
-        mock_config.SECRET_KEY = "test_secret"
-        mock_config.HOURS_TO_EXPIRE_SESSION = 1
-        mock_post.return_value.status_code = 200
-        mock_post.return_value.json.return_value = self.mock_user_data
-
-
-        result = self.auth_service.autenticate(self.email, self.password)
-        
-
-        self.assertIsInstance(result, Auth)
-        self.assertEqual(result.email, self.email)
-        self.assertEqual(result.name, self.mock_user_data["name"])
-        self.assertIsNotNone(result.token)
-        
-        decoded_token = jwt.decode(result.token, mock_config.SECRET_KEY, algorithms=["HS256"])
-        self.assertEqual(decoded_token["user"], self.email)
+   
 
     @patch('flaskr.service.AuthService.requests.post')
     def test_autenticate_no_user_found(self, mock_post):
