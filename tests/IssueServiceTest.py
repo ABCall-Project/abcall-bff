@@ -48,3 +48,16 @@ def test_return_a_list_of_issue_for_pagination(self, get_mock):
 
     self.assertEqual(response, issue_mock)
 
+@patch('requests.get')
+def test_return_a_list_of_issues(self, get_mock):
+    issues = []
+    issue =  IssueBuilder().build()
+    issues.append(issue)
+    issueService = IssueService()
+    get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+    get_mock.return_value.json.return_value = issues
+
+    response = issueService.get_all_issues()
+
+    self.assertEqual(response, issues)
+
