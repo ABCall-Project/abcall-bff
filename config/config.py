@@ -16,3 +16,6 @@ class Config:
         self.APP_NAME=os.getenv('APP_NAME')
         self.URL_REPORTS_SERVICE=os.getenv('URL_REPORTS_SERVICE')
         self.CUSTOMER_API_PATH=os.getenv('CUSTOMER_API_PATH')
+        self.AUTH_API_PATH=os.getenv('AUTH_API_PATH')
+        self.SECRET_KEY=os.getenv('SECRET_KEY')
+        self.HOURS_TO_EXPIRE_SESSION=os.getenv('HOURS_TO_EXPIRE_SESSION')
