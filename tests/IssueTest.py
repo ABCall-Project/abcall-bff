@@ -64,3 +64,13 @@ class IssueTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json["message"], error_message)
+
+    @patch('requests.get')
+    def test_should_return_internal_server_error_if_some_error_occurred(self, get_mock):
+        error_message = "Some error ocurred trying to get all issues"
+        get_mock.side_effect = SystemError('Some weird error ocurred 🤯')
+
+        response = self.client.get(f'/issues/getAllIssues')
+
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.json["message"], error_message)

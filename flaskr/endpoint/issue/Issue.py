@@ -29,6 +29,8 @@ class IssueView(Resource):
             return self.get_ia_predictive_answer()
         elif action=='get_issue_by_id':
             return self.get_issue_detail()
+        elif action == 'getAllIssues':
+            return self.get_all_issues()
         else:
             return {"message": "Action not found"}, 404
 
@@ -126,3 +128,19 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error occurred trying to get issue detail: {ex}')
                 return {'message': 'Something went wrong trying to get issue detail'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def get_all_issues(self):
+            try:
+                user_id = request.args.get('user_id')
+                self.logger.info(f'Receiving issue list by user {user_id}')
+
+                issues = self.issue_service.get_all_issues()
+
+                if issues:
+                    return issues, HTTPStatus.OK
+                
+                return {}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error ocurred trying to get all issues: {ex}')
+                return {"message": "Some error ocurred trying to get all issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
