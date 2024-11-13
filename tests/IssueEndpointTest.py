@@ -75,9 +75,14 @@ class IssueViewTestCase(unittest.TestCase):
         self.assertEqual(response.json['message'], 'Action not found')
     
     @patch('flaskr.service.IssueService.assign_issue')
-    def test_assignIssue_error(self, mock_get_issues_dashboard):
-        mock_get_issues_dashboard.side_effect = Exception('error')
-        response = self.client.post('/issues/assignIssue?issue_id=d0d2b83d-0188-45de-aecb-305e56237f22',{
-        "auth_user_agent_id": "ef74df9c-079c-4d66-8a5e-65fd0dab23b8"
-        })
+    def test_assignIssue_error(self, mock_assign_issue):
+        mock_assign_issue.side_effect = Exception('error')
+
+        response = self.client.post(
+            '/issues/assignIssue?issue_id=d0d2b83d-0188-45de-aecb-305e56237f22',
+            json={
+                "auth_user_agent_id": "ef74df9c-079c-4d66-8a5e-65fd0dab23b8"
+            }
+        )
+        
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
