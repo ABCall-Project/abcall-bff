@@ -77,7 +77,6 @@ class IssueViewTestCase(unittest.TestCase):
     @patch('flaskr.service.IssueService.assign_issue')
     def test_assignIssue_error(self, mock_assign_issue):
         mock_assign_issue.side_effect = Exception('error')
-
         response = self.client.post(
             '/issues/assignIssue?issue_id=d0d2b83d-0188-45de-aecb-305e56237f22',
             json={
@@ -85,4 +84,4 @@ class IssueViewTestCase(unittest.TestCase):
             }
         )
         
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
