@@ -77,7 +77,7 @@ class IssueTestCase(unittest.TestCase):
     
     @patch('requests.post')
     def test_should_return_internal_server_error_if_some_error_occurred(self, get_mock):
-        error_message = "Some error ocurred trying to get all issues"
+        error_message = "Some error ocurred trying to assign_issue issues"
         get_mock.side_effect = SystemError('Some weird error ocurred 🤯')
         fake = Faker()
         issue_id = str(fake.uuid4())
