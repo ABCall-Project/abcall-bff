@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Auth:
-    def __init__(self, id,name:str,last_name:str,phone_number:str,email:str,address:str,birthdate:datetime,role_id:str,token:str):
+    def __init__(self, id,name:str,last_name:str,phone_number:str,email:str,address:str,birthdate:datetime,role_id:str,token:str,customer_id:str=None):
         self.id=id
         self.name =name
         self.last_name=last_name
@@ -11,6 +11,7 @@ class Auth:
         self.birthdate=birthdate
         self.role_id=role_id
         self.token=token
+        self.customer_id=customer_id
 
     def to_dict(self):
         return {
@@ -22,5 +23,6 @@ class Auth:
 	        "address" : str(self.address),
 	        "birthdate": self.birthdate ,
 	        "role_id": str(self.role_id),
-            "token":self.token
+            "token":self.token,
+            "customer_id":str(self.customer_id)
         }

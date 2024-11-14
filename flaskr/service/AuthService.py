@@ -64,7 +64,8 @@ class AuthService:
                         data.get('address'),
                         data.get('birthdate'),
                         data.get('role_id'),
-                        ''
+                        '',
+                        data.get('customer_id')
                     )
                     self.logger.info('user authenticated, generating token')
                     user.token = jwt.encode(
