@@ -4,6 +4,7 @@ from flask import jsonify, request,Response
 from http import HTTPStatus
 import logging
 from ...service.ReportService import ReportService
+from ...middleware.AuthMiddleware import token_required
 
 class ReportView(Resource):
     """
@@ -12,6 +13,7 @@ class ReportView(Resource):
         na
     """
 
+    @token_required
     def get(self, invoice_id):
         """
         This method is to download a invoice from her id
