@@ -4,6 +4,7 @@ from flask import jsonify, request
 from http import HTTPStatus
 from ...service.IssueService import *
 import logging
+from ...middleware.AuthMiddleware import token_required
 
 class IssueView(Resource):
     """
@@ -17,7 +18,7 @@ class IssueView(Resource):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
-
+    @token_required
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
