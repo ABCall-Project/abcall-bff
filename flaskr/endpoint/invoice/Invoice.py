@@ -6,6 +6,7 @@ from ...service.InvoiceService import *
 from ...models.Invoice import *
 import logging
 from ...service.IssueService import *
+from ...middleware.AuthMiddleware import token_required
 
 class InvoiceView(Resource):
     """
@@ -20,7 +21,7 @@ class InvoiceView(Resource):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
-
+    @token_required
     def get(self, action=None):
         if action == 'getInvoices':
             return self.getInvoices()

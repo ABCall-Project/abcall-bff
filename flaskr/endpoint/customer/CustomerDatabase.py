@@ -4,6 +4,7 @@ from http import HTTPStatus
 from ...service.CustomerDatabaseService import CustomerDatabaseService
 from uuid import UUID
 import logging
+from ...middleware.AuthMiddleware import token_required
 
 class CustomerDatabaseView(Resource):
     """
@@ -14,7 +15,8 @@ class CustomerDatabaseView(Resource):
         self.customer_database_service = CustomerDatabaseService()
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
-
+    
+    @token_required
     def post(self):
         try:
             data = request.get_json()
