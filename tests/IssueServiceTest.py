@@ -65,20 +65,13 @@ def test_return_a_list_of_issues(self, get_mock):
 def test_should_be_assign_an_issue(self, get_mock):
         return_message = "Some error ocurred trying to assign_issue issues"
         issue =  IssueBuilder().build()
-        issue.id
+        issueService = IssueService()
+        
         fake = Faker()
         auth_user_agent_id = str(fake.uuid4())
-        data = {
-            "auth_user_agent_id": auth_user_agent_id
-        }
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        response = issueService.assign_issue(issue.id,auth_user_agent_id)
 
-        response = self.client.post(
-        f'/issues/assignIssue?user_id={issue.id}',
-        json=data  
-    )
-
-        
-    
 @patch('requests.post')
 def test_should_return_internal_server_error_if_some_error_occurred(self, get_mock):
         error_message = "Some error ocurred trying to assign_issue issues"
