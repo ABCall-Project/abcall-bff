@@ -71,6 +71,7 @@ def test_should_be_assign_an_issue(self, get_mock):
         auth_user_agent_id = str(fake.uuid4())
         get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
         response = issueService.assign_issue(issue.id,auth_user_agent_id)
+        self.assertEqual(response, return_message)
 
 @patch('requests.post')
 def test_should_return_internal_server_error_if_some_error_occurred(self, get_mock):
