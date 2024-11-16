@@ -88,7 +88,7 @@ class IssueTestCase(unittest.TestCase):
 
         response = self.client.post(
         f'/issues/assignIssue?user_id={issue_id}',
-        json=data  # Enviar el cuerpo de la solicitud como JSON
+        json=data  
     )
 
         self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
