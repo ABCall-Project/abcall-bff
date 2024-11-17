@@ -76,20 +76,15 @@ class IssueServiceTestCase(unittest.TestCase):
 
     @patch('requests.post')
     def test_should_return_internal_server_error_if_some_error_occurred_assign_issue(self, get_mock):
-            error_message = "Some error ocurred trying to assign_issue issues"
-            get_mock.side_effect = SystemError('Some weird error ocurred 🤯')
-            fake = Faker()
-            issue_id = str(fake.uuid4())
-            auth_user_agent_id = str(fake.uuid4())
-            data = {
-                "auth_user_agent_id": auth_user_agent_id
-            }
+        error_message = "Some error ocurred trying to assign_issue issues"
+        mock_response = Mock()
+        fake = Faker()
+        mock_response.raise_for_status.side_effect = SystemError(error_message)
+        issue_id = IssueBuilder().with_id(fake.uuid4())
+        auth_user_agent_id = str(fake.uuid4())
+        issueService = IssueService()
 
-            response = self.client.post(
-                f'/issues/assignIssue?user_id={issue_id}',
-                json=data  
-            )
-
-            self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
-            self.assertEqual(response.json["message"], error_message)
+        with patch('requests.post', return_value=mock_response):
+            with self.assertRaises(SystemError):
+                issueService.assign_issue(issue_id, auth_user_agent_id)
 
