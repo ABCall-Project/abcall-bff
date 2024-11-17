@@ -64,13 +64,14 @@ class IssueServiceTestCase(unittest.TestCase):
     @patch('requests.post')
     def test_should_be_assign_an_issue(self, get_mock):
             return_message = "Some error ocurred trying to assign_issue issues"
-            issue =  IssueBuilder().build()
+            fake = Faker()
+
+            issue_id =  IssueBuilder().with_id(fake.uuid4())
             issueService = IssueService()
             
-            fake = Faker()
             auth_user_agent_id = str(fake.uuid4())
             get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
-            response = issueService.assign_issue(issue.id,auth_user_agent_id)
+            response = issueService.assign_issue(issue_id,auth_user_agent_id)
             self.assertEqual(response, return_message)
 
     @patch('requests.post')
