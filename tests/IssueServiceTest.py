@@ -21,34 +21,52 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(issues)
 
-    # def test_return_an_error_if_some_exception_error_occurred(self):
-    #     mock_response = Mock()
-    #     mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
+    @patch('requests.get')
+    def test_return_an_error_if_some_exception_error_occurred(self, get_mock):
+        fake = Faker()
+        user_id = fake.uuid4()
+        issueService = IssueService()
+        
+        get_mock.side_effect = requests.exceptions.RequestException("Some weird error ocurred 🤯")
+        
+        with self.assertRaises(requests.exceptions.RequestException):
+            issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
 
-    #     with patch('requests.get', return_value=mock_response):
-    #         fake = Faker()
-    #         user_id = fake.uuid4()
-    #         issueService = IssueService()
 
-    #         with self.assertRaises(SystemError):
-    #             issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
+    @patch('requests.get')
+    def test_return_a_list_of_issue_for_pagination(self, get_mock):
+        fake = Faker()
+        user_id = fake.uuid4()
+        issues = []
+        issue =  IssueBuilder().build()
+        issues.append(issue)
+        issue_mock = FindIssueBuilder().with_data(issues).build()
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = issue_mock
+        expected_response = {
+            'hasNext': issue_mock['has_next'],
+            'totalPages': issue_mock['total_pages'],
+            'page': issue_mock['page'],
+            'limit': issue_mock['limit'],
+            'data': []
+        }
 
+        for issue in issue_mock['data']:
+            expected_response['data'].append({
+                "id": issue['id'],
+                "authUserId": issue['auth_user_id'],
+                "description": issue['description'],
+                "status": issue['status'],
+                "subject": issue['subject'],
+                "createdAt": issue['created_at'],
+                "closedAt": issue['closed_at'],
+                "channelPlanId": issue['channel_plan_id']
+            })
 
-    # @patch('requests.get')
-    # def test_return_a_list_of_issue_for_pagination(self, get_mock):
-    #     fake = Faker()
-    #     user_id = fake.uuid4()
-    #     issues = []
-    #     issue =  IssueBuilder().build()
-    #     issues.append(issue)
-    #     issue_mock = FindIssueBuilder().with_data(issues).build()
-    #     issueService = IssueService()
-    #     get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
-    #     get_mock.return_value.json.return_value = issue_mock
+        response = issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10)
 
-    #     response = issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10)
-
-    #     self.assertEqual(response, issue_mock)
+        self.assertEqual(response, expected_response)
 
     @patch('requests.get')
     def test_return_a_list_of_issues(self, get_mock):
