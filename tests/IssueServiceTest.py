@@ -72,10 +72,10 @@ class IssueServiceTestCase(unittest.TestCase):
             auth_user_agent_id = str(fake.uuid4())
             get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
             response = issueService.assign_issue(issue_id,auth_user_agent_id)
-            self.assertEqual(response, return_message)
+            self.assertEqual(response, issue_id)
 
     @patch('requests.post')
-    def test_should_return_internal_server_error_if_some_error_occurred(self, get_mock):
+    def test_should_return_internal_server_error_if_some_error_occurred_assign_issue(self, get_mock):
             error_message = "Some error ocurred trying to assign_issue issues"
             get_mock.side_effect = SystemError('Some weird error ocurred 🤯')
             fake = Faker()
