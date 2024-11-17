@@ -19,17 +19,17 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(issues)
 
-    # def test_return_an_error_if_some_exception_error_occurred(self):
-    #     mock_response = Mock()
-    #     mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
+    def test_return_an_error_if_some_exception_error_occurred(self):
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
 
-    #     with patch('requests.get', return_value=mock_response):
-    #         fake = Faker()
-    #         user_id = fake.uuid4()
-    #         issueService = IssueService()
+        with patch('requests.get', return_value=mock_response):
+            fake = Faker()
+            user_id = fake.uuid4()
+            issueService = IssueService()
 
-    #         with self.assertRaises(SystemError):
-    #             issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
+            with self.assertRaises(SystemError):
+                issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
 
 
     # @patch('requests.get')
@@ -74,21 +74,21 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertEqual(response, issue_id)
 
-    # @patch('requests.post')  # Mockeamos la función 'requests.post'
-    # def test_should_return_internal_server_error_if_some_error_occurred_assign_issue(self, post_mock):
-    #     error_message = "Some error occurred trying to assign_issue issues"
-    #     mock_response = Mock()
-    #     fake = Faker()
-    #     mock_response.raise_for_status.side_effect = SystemError(error_message)
+    @patch('requests.post')  
+    def test_should_return_internal_server_error_if_some_error_occurred_assign_issue(self, post_mock):
+        error_message = "Some error occurred trying to assign_issue issues"
+        mock_response = Mock()
+        fake = Faker()
+        mock_response.raise_for_status.side_effect = SystemError(error_message)
 
-    #     issue_id = IssueBuilder().with_id(fake.uuid4())
-    #     auth_user_agent_id = str(fake.uuid4())
-    #     issueService = IssueService()
-    #     post_mock.return_value = mock_response
+        issue_id = IssueBuilder().with_id(fake.uuid4())
+        auth_user_agent_id = str(fake.uuid4())
+        issueService = IssueService()
+        post_mock.return_value = mock_response
 
-    #     with self.assertLogs('your_module.IssueService', level='ERROR') as log:  
-    #         with self.assertRaises(SystemError):  
-    #             issueService.assign_issue(issue_id, auth_user_agent_id)
-    #         self.assertTrue(any('Error communicating with issue service' in message for message in log.output),
-    #                         "Error message not logged correctly.")
+        with self.assertLogs('your_module.IssueService', level='ERROR') as log:  
+            with self.assertRaises(SystemError):  
+                issueService.assign_issue(issue_id, auth_user_agent_id)
+            self.assertTrue(any('Error communicating with issue service' in message for message in log.output),
+                            "Error message not logged correctly.")
 
