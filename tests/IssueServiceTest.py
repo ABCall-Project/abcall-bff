@@ -79,13 +79,21 @@ class IssueServiceTestCase(unittest.TestCase):
         error_message = "Some error occurred trying to assign_issue issues"
         mock_response = Mock()
         fake = Faker()
-        mock_response.raise_for_status.side_effect = Exception(error_message)
-        
+
+        # Simulamos un error en la llamada POST
+        mock_response.raise_for_status.side_effect = SystemError(error_message)
+
         issue_id = IssueBuilder().with_id(fake.uuid4())
         auth_user_agent_id = str(fake.uuid4())
         issueService = IssueService()
+
+        # Configuramos el mock para que devuelva la respuesta simulada
         post_mock.return_value = mock_response
 
-        with self.assertRaises(Exception):  # Aquí verificas que se lance cualquier excepción
+        # Ejecutamos el servicio y verificamos que no se lanza una excepción,
+        # pero que se maneja el error de alguna forma, por ejemplo, registrando el error
+        with self.assertLogs('your_module.IssueService', level='ERROR') as log:
             issueService.assign_issue(issue_id, auth_user_agent_id)
+            # Verificamos si el log de error fue llamado, ya que la excepción debería haberse manejado
+            self.assertIn('Error communicating with issue service', log.output[0])
 
