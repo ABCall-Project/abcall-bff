@@ -21,26 +21,32 @@ class IssueServiceTestCase(unittest.TestCase):
 
     @patch('requests.get')  # Mockeamos 'requests.get'
     def test_return_an_error_if_some_exception_error_occurred(self, mock_get):
+        # Simulamos que raise_for_status lanza una excepción
         error_message = "Some weird error occurred 🤯"
         mock_response = Mock()
-        mock_response.raise_for_status.side_effect = SystemError(error_message)  
-
+        
+        # Lanza la excepción cuando se llama a raise_for_status
+        mock_response.raise_for_status.side_effect = SystemError(error_message)
+        
+        # Configuramos el mock para que se retorne esta respuesta
         mock_get.return_value = mock_response
 
         fake = Faker()
         user_id = fake.uuid4()
         issueService = IssueService()
 
+        # Verificamos que la excepción SystemError sea lanzada
         with self.assertRaises(SystemError):
             issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
 
-        # Verificamos que se haya registrado el mensaje en los logs
-        with self.assertLogs('your_module.IssueService', level='ERROR') as log: 
+        # Verificamos si el log de error fue registrado correctamente
+        with self.assertLogs('your_module.IssueService', level='ERROR') as log:  # Ajusta el nombre del logger
             try:
                 issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
             except SystemError:
-                pass  
+                pass  # Ignoramos la excepción porque ya la hemos comprobado
 
+            # Verificamos si el mensaje se ha registrado en los logs
             self.assertTrue(any('Error communicating with issue service' in message for message in log.output),
                             "Error message not logged correctly.")
 
