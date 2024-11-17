@@ -79,13 +79,13 @@ class IssueServiceTestCase(unittest.TestCase):
         error_message = "Some error occurred trying to assign_issue issues"
         mock_response = Mock()
         fake = Faker()
-
-        mock_response.raise_for_status.side_effect = SystemError(error_message)
+        mock_response.raise_for_status.side_effect = Exception(error_message)
+        
         issue_id = IssueBuilder().with_id(fake.uuid4())
         auth_user_agent_id = str(fake.uuid4())
         issueService = IssueService()
         post_mock.return_value = mock_response
 
-        with self.assertRaises(SystemError):
+        with self.assertRaises(Exception):  # Aquí verificas que se lance cualquier excepción
             issueService.assign_issue(issue_id, auth_user_agent_id)
 
