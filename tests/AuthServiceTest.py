@@ -67,8 +67,8 @@ class AuthServiceTest(unittest.TestCase):
         get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
         get_mock.return_value.json.return_value = users_mock
         expected_response = {
-            'hasNext': users_mock['has_next'],
-            'totalPages': users_mock['total_pages'],
+            'has_next': users_mock['has_next'],
+            'total_pages': users_mock['total_pages'],
             'page': users_mock['page'],
             'limit': users_mock['limit'],
             'data': []
