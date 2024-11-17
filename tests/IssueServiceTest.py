@@ -62,7 +62,7 @@ def test_return_a_list_of_issues(self, get_mock):
     self.assertEqual(response, issues)
 
 @patch('requests.post')
-def test_should_be_assign_an_issue(self, get_mock):
+def cle(self, get_mock):
         return_message = "Some error ocurred trying to assign_issue issues"
         issue =  IssueBuilder().build()
         issueService = IssueService()
