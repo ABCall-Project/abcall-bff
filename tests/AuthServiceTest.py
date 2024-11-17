@@ -12,6 +12,7 @@ from builder import FindIssueBuilder
 class AuthServiceTest(unittest.TestCase):
     
     def setUp(self):
+        self.user_builder= AuthBuilder()
         self.auth_service = AuthService()
         self.email = "test@example.com"
         self.password = "password123"
@@ -60,7 +61,7 @@ class AuthServiceTest(unittest.TestCase):
         fake = Faker()
         role_id = fake.uuid4()
         users = []
-        user =  AuthBuilder().build()
+        user =  self.user_builder.build()
         users.append(user)
         users_mock = FindIssueBuilder().with_data(users).build()
         get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
