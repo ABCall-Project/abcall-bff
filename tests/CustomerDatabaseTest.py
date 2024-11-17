@@ -4,14 +4,14 @@ from http import HTTPStatus
 from uuid import uuid4
 from flaskr.app import app
 
-class CustomerDatabaseTestCase(unittest.TestCase):
+class CustomerDatabaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         cls.client = app.test_client()
         app.testing = True
 
-    @patch('flaskr.service.CustomerDatabaseService.CustomerDatabaseService.load_entries')
+    @patch('flaskr.service.CustomerDatabaseService.CustomerDatabaseService.load_entries')  # Ruta al método
     def test_post_load_entries_success(self, load_entries_mock):
         fake_customer_id = str(uuid4())
         fake_entries = [
@@ -19,25 +19,13 @@ class CustomerDatabaseTestCase(unittest.TestCase):
             {"topic": "Topic 2", "content": "Content 2"}
         ]
         mock_response = [
-            {
-                "id": str(uuid4()),
-                "customer_id": fake_customer_id,
-                "topic": "Topic 1",
-                "content": "Content 1",
-                "created_at": "2024-11-14T12:00:00"
-            },
-            {
-                "id": str(uuid4()),
-                "customer_id": fake_customer_id,
-                "topic": "Topic 2",
-                "content": "Content 2",
-                "created_at": "2024-11-14T12:05:00"
-            }
+            {"id": str(uuid4()), "customer_id": fake_customer_id, "topic": "Topic 1", "content": "Content 1"},
+            {"id": str(uuid4()), "customer_id": fake_customer_id, "topic": "Topic 2", "content": "Content 2"}
         ]
         load_entries_mock.return_value = mock_response
 
         response = self.client.post(
-            '/customer/loadCustomerDataBase',
+            '/customerDatabase/loadEntries',
             json={"customer_id": fake_customer_id, "entries": fake_entries}
         )
 
@@ -51,7 +39,7 @@ class CustomerDatabaseTestCase(unittest.TestCase):
         load_entries_mock.return_value = None
 
         response = self.client.post(
-            '/customer/loadCustomerDataBase',
+            '/customerDatabase/loadEntries',
             json={"customer_id": fake_customer_id, "entries": fake_entries}
         )
 
@@ -61,8 +49,8 @@ class CustomerDatabaseTestCase(unittest.TestCase):
     @patch('flaskr.service.CustomerDatabaseService.CustomerDatabaseService.load_entries')
     def test_post_load_entries_invalid_request(self, load_entries_mock):
         response = self.client.post(
-            '/customer/loadCustomerDataBase',
-            json={"entries": []}  # Missing customer_id
+            '/customerDatabase/loadEntries',
+            json={"entries": []}  # Falta el customer_id
         )
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -75,7 +63,7 @@ class CustomerDatabaseTestCase(unittest.TestCase):
         load_entries_mock.side_effect = Exception("Unexpected error")
 
         response = self.client.post(
-            '/customer/loadCustomerDataBase',
+            '/customerDatabase/loadEntries',
             json={"customer_id": fake_customer_id, "entries": fake_entries}
         )
 
