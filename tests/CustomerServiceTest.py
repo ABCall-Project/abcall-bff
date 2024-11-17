@@ -10,7 +10,7 @@ class CustomerServiceTestCase(unittest.TestCase):
         os.environ['CUSTOMER_API_PATH'] = 'http://abcall-url-fake.com'
         self.service = CustomerService()
 
-    @patch('flaskr.service.CustomerService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_add_customers_success(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 201
@@ -44,7 +44,7 @@ class CustomerServiceTestCase(unittest.TestCase):
         self.assertEqual(result[0]['document'], '987654321')
         self.assertEqual(result[1]['name'], 'Jane Smith')
 
-    @patch('flaskr.service.CustomerService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_add_customers_failure(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 500
@@ -59,7 +59,7 @@ class CustomerServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    @patch('flaskr.service.CustomerService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_add_customers_invalid_response(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 400
@@ -72,7 +72,7 @@ class CustomerServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    @patch('flaskr.service.CustomerService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_add_customers_exception(self, mock_post):
         mock_post.side_effect = Exception("Some connection error")
 

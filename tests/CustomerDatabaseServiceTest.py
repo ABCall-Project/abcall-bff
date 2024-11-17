@@ -10,7 +10,7 @@ class CustomerDatabaseServiceTestCase(unittest.TestCase):
         os.environ['CUSTOMER_API_PATH'] = 'http://abcall-url-fake.com'
         self.service = CustomerDatabaseService()
 
-    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_load_entries_success(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 201
@@ -45,7 +45,7 @@ class CustomerDatabaseServiceTestCase(unittest.TestCase):
         self.assertEqual(result[0]["topic"], "Topic 1")
         self.assertEqual(result[1]["content"], "Content 2")
 
-    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_load_entries_failure(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 400
@@ -59,7 +59,7 @@ class CustomerDatabaseServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_load_entries_server_error(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 500
@@ -72,7 +72,7 @@ class CustomerDatabaseServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('requests.post')  # Ruta corregida
     def test_load_entries_exception(self, mock_post):
         mock_post.side_effect = Exception("Connection error")
 
