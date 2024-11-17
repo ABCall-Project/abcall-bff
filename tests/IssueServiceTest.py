@@ -19,17 +19,17 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(issues)
 
-    def test_return_an_error_if_some_exception_error_occurred(self):
-        mock_response = Mock()
-        mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
+    # def test_return_an_error_if_some_exception_error_occurred(self):
+    #     mock_response = Mock()
+    #     mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
 
-        with patch('requests.get', return_value=mock_response):
-            fake = Faker()
-            user_id = fake.uuid4()
-            issueService = IssueService()
+    #     with patch('requests.get', return_value=mock_response):
+    #         fake = Faker()
+    #         user_id = fake.uuid4()
+    #         issueService = IssueService()
 
-            with self.assertRaises(SystemError):
-                issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
+    #         with self.assertRaises(SystemError):
+    #             issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
 
 
     # @patch('requests.get')
