@@ -5,6 +5,8 @@ from faker import Faker
 from builder import FindIssueBuilder
 from flaskr.service.IssueService import IssueService
 from tests.builder import IssueBuilder
+import requests
+
 
 
 class IssueServiceTestCase(unittest.TestCase):
@@ -19,45 +21,89 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(issues)
 
-def test_return_an_error_if_some_exception_error_occurred(self):
-    mock_response = Mock()
-    mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
-
-    with patch('requests.get', return_value=mock_response):
+    @patch('requests.get')
+    def test_return_an_error_if_some_exception_error_occurred(self, get_mock):
         fake = Faker()
         user_id = fake.uuid4()
         issueService = IssueService()
-
-        with self.assertRaises(SystemError):
+        
+        get_mock.side_effect = requests.exceptions.RequestException("Some weird error ocurred 🤯")
+        
+        with self.assertRaises(requests.exceptions.RequestException):
             issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
 
 
-@patch('requests.get')
-def test_return_a_list_of_issue_for_pagination(self, get_mock):
-    fake = Faker()
-    user_id = fake.uuid4()
-    issues = []
-    issue =  IssueBuilder().build()
-    issues.append(issue)
-    issue_mock = FindIssueBuilder().with_data(issues).build()
-    issueService = IssueService()
-    get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
-    get_mock.return_value.json.return_value = issue_mock
+    @patch('requests.get')
+    def test_return_a_list_of_issue_for_pagination(self, get_mock):
+        fake = Faker()
+        user_id = fake.uuid4()
+        issues = []
+        issue =  IssueBuilder().build()
+        issues.append(issue)
+        issue_mock = FindIssueBuilder().with_data(issues).build()
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = issue_mock
+        expected_response = {
+            'hasNext': issue_mock['has_next'],
+            'totalPages': issue_mock['total_pages'],
+            'page': issue_mock['page'],
+            'limit': issue_mock['limit'],
+            'data': []
+        }
 
-    response = issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10)
+        for issue in issue_mock['data']:
+            expected_response['data'].append({
+                "id": issue['id'],
+                "authUserId": issue['auth_user_id'],
+                "description": issue['description'],
+                "status": issue['status'],
+                "subject": issue['subject'],
+                "createdAt": issue['created_at'],
+                "closedAt": issue['closed_at'],
+                "channelPlanId": issue['channel_plan_id']
+            })
 
-    self.assertEqual(response, issue_mock)
+        response = issueService.get_issue_by_user_id(user_id=user_id,page=1, limit=10)
 
-@patch('requests.get')
-def test_return_a_list_of_issues(self, get_mock):
-    issues = []
-    issue =  IssueBuilder().build()
-    issues.append(issue)
-    issueService = IssueService()
-    get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
-    get_mock.return_value.json.return_value = issues
+        self.assertEqual(response, expected_response)
 
-    response = issueService.get_all_issues()
+    @patch('requests.get')
+    def test_return_a_list_of_issues(self, get_mock):
+        issues = []
+        issue =  IssueBuilder().build()
+        issues.append(issue)
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = issues
 
-    self.assertEqual(response, issues)
+        response = issueService.get_all_issues()
+
+        self.assertEqual(response, issues)
+
+    @patch('requests.post')
+    def test_should_be_assign_an_issue(self, post_mock):
+        fake = Faker()
+
+        issue_id = IssueBuilder().with_id(fake.uuid4())
+        issueService = IssueService()
+        
+        auth_user_agent_id = str(fake.uuid4())
+        post_mock.return_value = MagicMock(status_code=HTTPStatus.OK, json=MagicMock(return_value=issue_id))
+        response = issueService.assign_issue(issue_id, auth_user_agent_id)
+
+        self.assertEqual(response, issue_id)
+
+    @patch('requests.post')
+    def test_should_handle_exception_when_communicating_with_service(self, post_mock):
+        fake = Faker()
+
+        issue_id = fake.uuid4()
+        auth_user_agent_id = str(fake.uuid4())
+        issueService = IssueService()
+        
+        post_mock.side_effect = requests.exceptions.RequestException("Error de conexión")
+        
+        with self.assertRaises(requests.exceptions.RequestException):
+            issueService.assign_issue(issue_id, auth_user_agent_id)
 

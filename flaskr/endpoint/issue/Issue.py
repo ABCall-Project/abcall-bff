@@ -34,6 +34,12 @@ class IssueView(Resource):
             return self.get_all_issues()
         else:
             return {"message": "Action not found"}, 404
+    
+    def post(self,action=None):
+        if action == 'assignIssue':
+            return self.assign_issue()
+        else:
+            return {"message": "Action not found"}, 404
 
     def getIAResponse(self):
         try:
@@ -145,3 +151,19 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error ocurred trying to get all issues: {ex}')
                 return {"message": "Some error ocurred trying to get all issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def assign_issue(self):
+            try:
+                self.logger.info(f'Receiving issue for  assign_issue')
+                issue_id = request.args.get('issue_id')
+                data = request.get_json()
+                auth_user_agent_id = data.get('auth_user_agent_id')
+                issues = self.issue_service.assign_issue(issue_id,auth_user_agent_id)
+                if issues:
+                    return issues, HTTPStatus.OK
+                
+                return {}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error ocurred trying to assign_issue issues: {ex}')
+                return {"message": "Some error ocurred trying to assign_issue issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
