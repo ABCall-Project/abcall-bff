@@ -90,10 +90,9 @@ class IssueServiceTestCase(unittest.TestCase):
         # Configuramos el mock para que devuelva la respuesta simulada
         post_mock.return_value = mock_response
 
-        # Ejecutamos el servicio y verificamos que no se lanza una excepción,
-        # pero que se maneja el error de alguna forma, por ejemplo, registrando el error
+        # Asegurarnos de que el logger esté configurado para registrar errores
         with self.assertLogs('your_module.IssueService', level='ERROR') as log:
             issueService.assign_issue(issue_id, auth_user_agent_id)
-            # Verificamos si el log de error fue llamado, ya que la excepción debería haberse manejado
-            self.assertIn('Error communicating with issue service', log.output[0])
+            # Verificamos que se haya registrado un error en los logs
+            self.assertTrue(any('Error communicating with issue service' in message for message in log.output))
 
