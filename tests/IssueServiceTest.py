@@ -19,17 +19,30 @@ class IssueServiceTestCase(unittest.TestCase):
 
         self.assertIsNone(issues)
 
-    def test_return_an_error_if_some_exception_error_occurred(self):
+    @patch('requests.get')  # Mockeamos 'requests.get'
+    def test_return_an_error_if_some_exception_error_occurred(self, mock_get):
+        error_message = "Some weird error occurred 🤯"
         mock_response = Mock()
-        mock_response.raise_for_status.side_effect = SystemError("Some weird error ocurred 🤯")
+        mock_response.raise_for_status.side_effect = SystemError(error_message)  
 
-        with patch('requests.get', return_value=mock_response):
-            fake = Faker()
-            user_id = fake.uuid4()
-            issueService = IssueService()
+        mock_get.return_value = mock_response
 
-            with self.assertRaises(SystemError):
+        fake = Faker()
+        user_id = fake.uuid4()
+        issueService = IssueService()
+
+        with self.assertRaises(SystemError):
+            issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
+
+        # Verificamos que se haya registrado el mensaje en los logs
+        with self.assertLogs('your_module.IssueService', level='ERROR') as log: 
+            try:
                 issueService.get_issue_by_user_id(user_id=user_id, page=1, limit=10)
+            except SystemError:
+                pass  
+
+            self.assertTrue(any('Error communicating with issue service' in message for message in log.output),
+                            "Error message not logged correctly.")
 
 
     # @patch('requests.get')
