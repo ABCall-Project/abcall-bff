@@ -3,6 +3,7 @@ from typing import Optional
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from http import HTTPStatus
+from uuid import UUID
 import requests
 import re
 import os
@@ -88,4 +89,17 @@ class AuthService:
             self.logger.info(f"Error comunication with auth: {str(e)}")
             return None
         
-    
+    def get_users_by_role(self,role_id:UUID,page:int,limit:int):
+        try:
+            
+            self.logger.info(f'init consuming api getUsersByRole details {self.base_url}/users/getUsersByRole?role_id=${role_id}&page=${page}&limit=${limit}')
+            response = requests.get(f'{self.base_url}/users/getUsersByRole?role_id={role_id}&page={page}&limit={limit}')
+            self.logger.info(f'quering getUsersByRole details by getUsersByRole id')
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying Users service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with users service: {str(e)}')
+            raise e
