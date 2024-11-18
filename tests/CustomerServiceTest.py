@@ -9,7 +9,7 @@ class CustomerServiceTestCase(unittest.TestCase):
         os.environ['CUSTOMER_API_PATH'] = 'http://fakeurl.com'
         self.service = CustomerService()
 
-    @patch('service.CustomerService.requests.post')
+    @patch('flaskr.service.CustomerService.requests.post')
     def test_add_customers_success(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 201
@@ -31,7 +31,7 @@ class CustomerServiceTestCase(unittest.TestCase):
             json={"plan_id": plan_id, "customers": customers}
         )
 
-    @patch('service.CustomerService.requests.post')
+    @patch('flaskr.service.CustomerService.requests.post')
     def test_add_customers_error_response(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 400
@@ -51,7 +51,7 @@ class CustomerServiceTestCase(unittest.TestCase):
             json={"plan_id": plan_id, "customers": customers}
         )
 
-    @patch('service.CustomerService.requests.post')
+    @patch('flaskr.service.CustomerService.requests.post')
     def test_add_customers_exception(self, mock_post):
         mock_post.side_effect = Exception("API is down")
 
