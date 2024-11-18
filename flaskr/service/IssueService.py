@@ -170,3 +170,19 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+
+    def assign_issue(self, issue_id:str, auth_user_agent_id:str) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/assignIssue?issue_id={issue_id}'
+            data = {"auth_user_agent_id": auth_user_agent_id}
+          
+            response = requests.post(url, json=data)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error assign_issue issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
