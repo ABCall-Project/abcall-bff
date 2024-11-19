@@ -37,13 +37,12 @@ class AuthUser(Resource):
     def sign_in(self):
         self.logger.info('receiving request to signin')
         try:
-
             if request.is_json:  
                 data = request.get_json()
                 email = data.get('email')
                 password = data.get('password')
                 self.logger.info(f'Receive request to signin {email}')
-                user = self.service.autenticate(email,password)
+                user = self.service.authenticate(email,password)
                 if user:
                     user_s=user.to_dict()
                     return user_s, HTTPStatus.OK
@@ -59,7 +58,7 @@ class AuthUser(Resource):
     
     def get_users_by_role(self):
         try:
-            self.logger.info(f'Receive request to get get_users_by_role')
+            self.logger.info('Receive request to get get_users_by_role')
             role_id = request.args.get('role_id')
             page = int(request.args.get('page'))
             limit = int(request.args.get('limit'))

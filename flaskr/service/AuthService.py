@@ -32,7 +32,7 @@ class AuthService:
         self.logger.info('Instancing auth service')
         self.base_url = self.config.AUTH_API_PATH   
     
-    def autenticate(self,email,password):
+    def authenticate(self,email,password):
         """
         method to authenticate a user
         Args:
