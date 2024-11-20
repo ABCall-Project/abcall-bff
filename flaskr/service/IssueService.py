@@ -186,3 +186,22 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+    
+    def get_open_issues(self, page:int, limit:int):
+        try:
+            url = f'{self.base_url}/issue/getOpenIssues'
+            params = {
+                'page': page,
+                'limit': limit
+            }
+            params = {key: value for key, value in params.items() if value is not None}
+            response = requests.get(url, params=params)
+
+            if response.status_code == HTTPStatus.OK:
+                return issues_pagination_mapper(response.json())
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e

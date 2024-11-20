@@ -32,6 +32,8 @@ class IssueView(Resource):
             return self.get_issue_detail()
         elif action == 'getAllIssues':
             return self.get_all_issues()
+        elif action == 'getOpenIssues':
+            return self.get_open_issues()
         else:
             return {"message": "Action not found"}, 404
     
@@ -167,3 +169,22 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error ocurred trying to assign_issue issues: {ex}')
                 return {"message": "Some error ocurred trying to assign_issue issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def get_open_issues(self):
+        try:
+            page = int(request.args.get('page'))
+            limit = int(request.args.get('limit'))
+
+
+            self.logger.info(f'Receiving issue get_open_issues')
+
+            issues = self.issue_service.get_open_issues(page=page, limit=limit)
+
+            if issues:
+                return issues, HTTPStatus.OK
+            
+            return {}, HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')
+            return {"message": "Some error ocurred trying to get issues by user id"}, HTTPStatus.INTERNAL_SERVER_ERROR
