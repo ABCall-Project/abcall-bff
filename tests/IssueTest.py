@@ -76,6 +76,26 @@ class IssueTestCase(unittest.TestCase):
         self.assertEqual(response.json["message"], error_message)
     
     @patch('requests.post')
+    def test_should_return_not_found_when_there_is_not_any_data_on_assign_issue(self, get_mock):
+        issues_mock = {}
+        fake = Faker()
+        issue_id = str(fake.uuid4())
+        auth_user_agent_id = str(fake.uuid4())
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.NOT_FOUND)
+        get_mock.return_value.json.return_value = issues_mock
+        data = {
+            "auth_user_agent_id": auth_user_agent_id
+        }
+
+        response = self.client.post(
+        f'/issues/assignIssue?user_id={issue_id}',
+        json=data  
+    )
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.json, {})
+    
+    @patch('requests.post')
     def test_should_return_internal_server_error_if_some_error_occurred_on_assign_issue(self, get_mock):
         error_message = "Some error ocurred trying to assign_issue issues"
         get_mock.side_effect = SystemError('Some weird error ocurred 🤯')
