@@ -118,8 +118,6 @@ class IssueServiceTestCase(unittest.TestCase):
     
     @patch('requests.get')
     def test_return_a_list_of_open_issue_for_pagination(self, get_mock):
-        fake = Faker()
-        user_id = fake.uuid4()
         issues = []
         issue =  IssueBuilder().build()
         issues.append(issue)
