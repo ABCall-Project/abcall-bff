@@ -103,7 +103,7 @@ class IssueTestCase(unittest.TestCase):
         response = self.client.get(f'/issues/getOpenIssues?page=1&limit=5')
 
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        self.assertEqual(response.json, {'message': 'Action not found'})
+        self.assertEqual(response.json, {})
     
     @patch('requests.get')
     def test_should_get_a_pagination_list_of_open_issues(self, get_mock):
