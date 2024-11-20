@@ -93,3 +93,14 @@ class IssueTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json["message"], error_message)
+    
+    @patch('requests.get')
+    def test_should_return_not_found_when_there_is_not_any_data_open_issues(self, get_mock):
+        issues_mock = {}
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.NOT_FOUND)
+        get_mock.return_value.json.return_value = issues_mock
+
+        response = self.client.get(f'/issues/getOpenIssues&page=1&limit=5')
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.json, {})

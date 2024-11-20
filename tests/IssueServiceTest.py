@@ -107,3 +107,12 @@ class IssueServiceTestCase(unittest.TestCase):
         with self.assertRaises(requests.exceptions.RequestException):
             issueService.assign_issue(issue_id, auth_user_agent_id)
 
+    @patch('requests.get')
+    def test_return_none_when_status_code_is_not_ok(self, get_mock):
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        issues = issueService.get_open_issues(page=1, limit=10)
+
+        self.assertIsNone(issues)
+
