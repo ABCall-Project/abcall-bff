@@ -100,7 +100,26 @@ class IssueTestCase(unittest.TestCase):
         get_mock.return_value = MagicMock(status_code=HTTPStatus.NOT_FOUND)
         get_mock.return_value.json.return_value = issues_mock
 
-        response = self.client.get(f'/issues/getOpenIssues&page=1&limit=5')
+        response = self.client.get(f'/issues/getOpenIssues?page=1&limit=5')
 
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertEqual(response.json, {'message': 'Action not found'})
+    
+    @patch('requests.get')
+    def test_should_get_a_pagination_list_of_open_issues(self, get_mock):
+        fake = Faker()
+        issues = []
+        user_id = str(fake.uuid4())
+        issues.append(InvoiceDataResponseBuilder() \
+                        .with_auth_user_id(user_id)
+                     .build())
+        issues_mock = FindIssueBuilder() \
+                      .with_data(issues) \
+                    .build()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = issues_mock
+
+        response = self.client.get(f'/issues/getOpenIssues?page=1&limit=5')
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.json, issues_pagination_mapper(issues_mock))
