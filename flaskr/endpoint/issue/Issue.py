@@ -38,6 +38,8 @@ class IssueView(Resource):
     def post(self,action=None):
         if action == 'assignIssue':
             return self.assign_issue()
+        elif action == 'createIssue':
+            return self.create_issue()
         else:
             return {"message": "Action not found"}, 404
 
@@ -167,3 +169,41 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error ocurred trying to assign_issue issues: {ex}')
                 return {"message": "Some error ocurred trying to assign_issue issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+    
+    def create_issue(self):
+        """
+        Handles the creation of a new issue.
+        """
+        self.logger.info('Received request to create an issue.')
+        try:
+            file = request.files.get('file')
+            data = request.get_json() if request.is_json else request.form.to_dict()
+
+            auth_user_id = data.get("auth_user_id")
+            auth_user_agent_id = data.get('auth_user_agent_id')
+            subject = data.get("subject")
+            description = data.get("description")
+
+            self.logger.info(f"Creating issue for user ID: {auth_user_id}")
+
+            file_path = None
+            if file:
+                upload_directory = os.path.join(os.getcwd(), 'uploads')
+                os.makedirs(upload_directory, exist_ok=True)
+                file_path = os.path.join(upload_directory, file.filename)
+                file.save(file_path)
+                self.logger.info(f"File uploaded successfully at {file_path}")
+
+            self.issue_service.create_issue(
+                auth_user_id=auth_user_id,
+                auth_user_agent_id=auth_user_agent_id,
+                subject=subject,
+                description=description,
+                file_path=file_path
+            )
+
+            return {"message": "Issue created successfully"}, HTTPStatus.CREATED
+
+        except Exception as ex:
+            self.logger.error(f"Error while creating issue: {ex}")
+            return {"message": "Error creating issue"}, HTTPStatus.INTERNAL_SERVER_ERROR

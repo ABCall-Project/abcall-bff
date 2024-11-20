@@ -186,3 +186,27 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+        
+    def create_issue(self, auth_user_id: str, auth_user_agent_id: str, subject: str, description: str, file_path: Optional[str] = None) -> Optional[dict]:        
+        try:
+            url = f'{self.base_url}/issue/createIssue'
+            data = {
+                "auth_user_id": auth_user_id,
+                "auth_user_agent_id": auth_user_agent_id,
+                "subject": subject,
+                "description": description,
+            }
+            files = None
+            if file_path:
+                files = {"file": open(file_path, "rb")}
+            
+            response = requests.post(url, data=data, files=files)
+
+            if response.status_code == HTTPStatus.CREATED:
+                return response.json()
+            else:
+                self.logger.error(f'Error creating issue: {response.status_code}, {response.text}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issues API: {str(e)}')
+            raise e
