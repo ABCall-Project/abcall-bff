@@ -106,38 +106,26 @@ class AuthService:
             self.logger.error(f'Error communicating with users service: {str(e)}')
             raise e
 
-    def create_user(self, customer_user:CustomerUser):
+    def create_user(self, customer_user:CustomerUser, customer_id:str):
         try:
-            self.logger.info(f'Starting creation cusomer user process')
-            customer_data = {
+            self.logger.info(f'init consuming api create user {self.auth_base_url}/users')
+            user_data = {
                 'name': customer_user.name,
-                'document': customer_user.document,
-                'plan_id': customer_user.plan_id
+                'last_name': customer_user.last_name,
+                'phone_number': customer_user.phone_number,
+                'email': customer_user.email,
+                'address': customer_user.address,
+                'birthdate': customer_user.birthdate,
+                'role_id': customer_user.role_id,
+                'password': customer_user.password,
+                'customer_id': customer_id
             }
-            response_customer = requests.post(f'{self.customer_base_url}/customer/create',data=customer_data)
-            if (response_customer.status_code == HTTPStatus.CREATED):
-                self.logger.info(f'Customer created with id  {response_customer.json().get("id")}')
-                self.logger.info(f'init consuming api create user {self.auth_base_url}/users/createUser')
-                user_data = {
-                    'name': customer_user.name,
-                    'last_name': customer_user.last_name,
-                    'phone_number': customer_user.phone_number,
-                    'email': customer_user.email,
-                    'address': customer_user.address,
-                    'birthdate': customer_user.birthdate,
-                    'role_id': customer_user.role_id,
-                    'password': customer_user.password,
-                    'customer_id': response_customer.json().get("id")
-                }
-                response_user = requests.post(f'{self.auth_base_url}/user',data=user_data)
-                self.logger.info(f'quering create user')
-                if response_user.status_code == HTTPStatus.OK:
-                    return response_user.json()
-                else:
-                    self.logger.error(f'Error querying Users service: {response_user.status_code}')
-                    return None
+            response_user = requests.post(f'{self.auth_base_url}/user',data=user_data)
+            self.logger.info(f'quering create user')
+            if response_user.status_code == HTTPStatus.OK:
+                return response_user.json()
             else:
-                self.logger.error(f'Error querying Users service: {response_customer.status_code}')
+                self.logger.error(f'Error querying Users service: {response_user.status_code}')
                 return None
         except Exception as e:
             self.logger.error(f'Error communicating with users service: {str(e)}')

@@ -3,7 +3,8 @@ from flask import jsonify, request
 import logging
 import requests
 from http import HTTPStatus
-from ...service.AuthService import AuthService
+from flaskr.service.AuthService import AuthService
+from flaskr.service.CustomerService import CustomerService
 import logging
 
 from config import Config
@@ -17,7 +18,9 @@ class AuthUser(Resource):
 
     def __init__(self):
         config = Config()
-        self.service = AuthService()
+        self.auth_service = AuthService()
+        self.customer_service = CustomerService()
+        
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
@@ -26,7 +29,7 @@ class AuthUser(Resource):
         if action == 'getUsersByRole':
             return self.get_users_by_role()
         else:
-            return {"message": "Action not found"}, 404
+            return {"message": "Action not found"}, HTTPStatus.NOT_FOUND
         
     def post(self, action=None):
         if action == 'signin':
@@ -34,7 +37,7 @@ class AuthUser(Resource):
         if action == 'signup':
             return self.sign_up()
         else:
-            return {"message": "Action not found"}, 404
+            return {"message": "Action not found"}, HTTPStatus.NOT_FOUND
         
     def sign_up(self):
         self.logger.info('receiving request to signup')
@@ -63,14 +66,18 @@ class AuthUser(Resource):
                                              document=document, \
                                              plan_id=plan_id, \
                                              )
-
-                user = self.service.create_user(customer_user)
-                if user:
-                    return {
-                        'message': user['message']
-                    }, HTTPStatus.CREATED
+                customer = self.customer_service.create_customer(name,plan_id, document)
+                if customer:
+                    user = self.auth_service.create_user(customer_user, customer_id=customer['id'])
+                    if user:
+                        return {
+                            'message': user['message']
+                        }, HTTPStatus.CREATED
+                    else:
+                        return None, HTTPStatus.CONFLICT
                 else:
-                    return None, HTTPStatus.CONFLICT
+                    self.logger.error(f'Something was wrong on customer creation')
+                    return None, HTTPStatus.INTERNAL_SERVER_ERROR
             else:
                 return None, HTTPStatus.BAD_REQUEST
         
@@ -89,7 +96,7 @@ class AuthUser(Resource):
                 email = data.get('email')
                 password = data.get('password')
                 self.logger.info(f'Receive request to signin {email}')
-                user = self.service.authenticate(email,password)
+                user = self.auth_service.authenticate(email,password)
                 if user:
                     user_s=user.to_dict()
                     return user_s, HTTPStatus.OK
@@ -110,7 +117,7 @@ class AuthUser(Resource):
             page = int(request.args.get('page'))
             limit = int(request.args.get('limit'))
 
-            users_paginated = self.service.get_users_by_role(role_id=role_id,page=page,limit=limit)
+            users_paginated = self.auth_service.get_users_by_role(role_id=role_id,page=page,limit=limit)
             if users_paginated:
                 return users_paginated, HTTPStatus.OK
             
