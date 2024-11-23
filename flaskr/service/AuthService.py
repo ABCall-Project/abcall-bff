@@ -12,12 +12,13 @@ from ..models.auth import Auth
 from config import Config
 import jwt
 import datetime
+from flaskr.models.CustomerUser import CustomerUser
 
 class AuthService:
     """
     This class is for integrate the bff with the Auth service
     Attributes:
-        base_url (string): the Auth api url 
+        auth_base_url (string): the Auth api url 
     """
 
     def __init__(self):
@@ -30,9 +31,10 @@ class AuthService:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
         self.logger.info('Instancing auth service')
-        self.base_url = self.config.AUTH_API_PATH   
+        self.auth_base_url = self.config.AUTH_API_PATH
+        self.customer_base_url = self.config.CUSTOMER_API_PATH
     
-    def autenticate(self,email,password):
+    def authenticate(self,email,password):
         """
         method to authenticate a user
         Args:
@@ -43,12 +45,12 @@ class AuthService:
         """
         user=None
         try:
-            self.logger.info(f'init consuming api user {self.base_url}')
+            self.logger.info(f'init consuming api user {self.auth_base_url}')
             data = {
                 "email": email,
                 "password": password
             }
-            response = requests.post(f'{self.base_url}/users/getUserByCredentials',json=data)
+            response = requests.post(f'{self.auth_base_url}/users/getUserByCredentials',json=data)
             self.logger.info('quering auth')
             if response.status_code == 200:
                 self.logger.info('status code 200 auth')
@@ -92,13 +94,38 @@ class AuthService:
     def get_users_by_role(self,role_id:UUID,page:int,limit:int):
         try:
             
-            self.logger.info(f'init consuming api getUsersByRole details {self.base_url}/users/getUsersByRole?role_id=${role_id}&page=${page}&limit=${limit}')
-            response = requests.get(f'{self.base_url}/users/getUsersByRole?role_id={role_id}&page={page}&limit={limit}')
+            self.logger.info(f'init consuming api getUsersByRole details {self.auth_base_url}/users/getUsersByRole?role_id=${role_id}&page=${page}&limit=${limit}')
+            response = requests.get(f'{self.auth_base_url}/users/getUsersByRole?role_id={role_id}&page={page}&limit={limit}')
             self.logger.info(f'quering getUsersByRole details by getUsersByRole id')
             if response.status_code == HTTPStatus.OK:
                 return response.json()
             else:
                 self.logger.error(f'Error querying Users service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with users service: {str(e)}')
+            raise e
+
+    def create_user(self, customer_user:CustomerUser, customer_id:str):
+        try:
+            self.logger.info(f'init consuming api create user {self.auth_base_url}/users')
+            user_data = {
+                'name': customer_user.name,
+                'last_name': customer_user.last_name,
+                'phone_number': customer_user.phone_number,
+                'email': customer_user.email,
+                'address': customer_user.address,
+                'birthdate': customer_user.birthdate,
+                'role_id': customer_user.role_id,
+                'password': customer_user.password,
+                'customer_id': customer_id
+            }
+            response_user = requests.post(f'{self.auth_base_url}/user',data=user_data)
+            self.logger.info(f'quering create user')
+            if response_user.status_code == HTTPStatus.OK:
+                return response_user.json()
+            else:
+                self.logger.error(f'Error querying Users service: {response_user.status_code}')
                 return None
         except Exception as e:
             self.logger.error(f'Error communicating with users service: {str(e)}')

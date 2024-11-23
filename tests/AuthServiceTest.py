@@ -28,32 +28,32 @@ class AuthServiceTest(unittest.TestCase):
         }
 
     @patch('flaskr.service.AuthService.requests.post')
-    def test_autenticate_no_user_found(self, mock_post):
+    def test_authenticate_no_user_found(self, mock_post):
         mock_post.return_value.status_code = 200
         mock_post.return_value.json.return_value = None
 
-        result = self.auth_service.autenticate(self.email, self.password)
+        result = self.auth_service.authenticate(self.email, self.password)
         self.assertIsNone(result)
 
     @patch('flaskr.service.AuthService.requests.post')
-    def test_autenticate_invalid_credentials(self, mock_post):
+    def test_authenticate_invalid_credentials(self, mock_post):
         mock_post.return_value.status_code = 401
 
-        result = self.auth_service.autenticate(self.email, self.password)
+        result = self.auth_service.authenticate(self.email, self.password)
         self.assertIsNone(result)
 
     @patch('flaskr.service.AuthService.requests.post')
-    def test_autenticate_api_error(self, mock_post):
+    def test_authenticate_api_error(self, mock_post):
         mock_post.return_value.status_code = 500
 
-        result = self.auth_service.autenticate(self.email, self.password)
+        result = self.auth_service.authenticate(self.email, self.password)
         self.assertIsNone(result)
 
     @patch('flaskr.service.AuthService.requests.post')
-    def test_autenticate_exception(self, mock_post):
+    def test_authenticate_exception(self, mock_post):
         mock_post.side_effect = Exception("API is down")
 
-        result = self.auth_service.autenticate(self.email, self.password)
+        result = self.auth_service.authenticate(self.email, self.password)
         self.assertIsNone(result)
     
     @patch('requests.get')

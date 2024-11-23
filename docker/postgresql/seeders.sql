@@ -996,3 +996,39 @@ INSERT INTO issue (id,auth_user_id,auth_user_agent_id,status,subject,description
 	 ('a78431ae-1b41-48f3-88a2-6557bd490b0c'::uuid,'f7d0b546-94cb-468f-acf9-a3f287ba1b77'::uuid,'9c6ace24-775e-4af2-bd95-480c2c540ae9'::uuid,'18e7d7dd-247b-4e27-aa0e-4f15e8ba5930'::uuid,'Error de instalación','Lorem Ipsum 012','2024-02-04 02:00:00-03','2024-08-31 01:00:00-04','6938edfe-9f4b-445b-8dd5-fbaa570a273a'::uuid),
 	 ('c58b7ddb-3808-4f43-a875-78517965d5b6'::uuid,'f7d0b546-94cb-468f-acf9-a3f287ba1b77'::uuid,'9c6ace24-775e-4af2-bd95-480c2c540ae9'::uuid,'574408a7-3aa0-4eab-b279-62ed10e6107e'::uuid,'Interfaz no responsive','Lorem Ipsum 957','2024-09-02 01:00:00-04','2024-10-09 02:00:00-03','d256f4b9-f970-4222-9a7b-3e83def73038'::uuid),
 	 ('726738be-f7bc-4f5c-a4d1-36d27e69c386'::uuid,'f7d0b546-94cb-468f-acf9-a3f287ba1b77'::uuid,'5541639d-2509-4a5d-9877-588d351bb92f'::uuid,'574408a7-3aa0-4eab-b279-62ed10e6107e'::uuid,'Incidente por chatbot','Tengo hambre','2024-10-23 22:22:23.151563-03','2024-10-23 22:22:23.166367-03',NULL);
+
+INSERT INTO channel (id,name) VALUES
+	 ('731d752e-27df-47f5-908a-6c5ad10c19e3'::uuid,'email');
+
+INSERT INTO plan (id,name,basic_monthly_rate,issue_fee) VALUES
+	 ('845eb227-5356-4169-9799-95a97ec5ce33'::uuid,'EMPRESARIO',5000.00,50.00);
+
+INSERT INTO plan (id,name,basic_monthly_rate,issue_fee) VALUES
+	 ('4b921891-d08a-4436-b6c4-a63dd0dbdb94'::uuid,'EMPRENDEDOR',5000.00,50.00);
+
+INSERT INTO plan (id,name,basic_monthly_rate,issue_fee) VALUES
+	 ('41bc176b-8395-4f5b-b660-2cc9ca134a65'::uuid,'EMPRESARIO PLUS',5000.00,50.00);
+
+
+
+INSERT INTO customer (id,document,name,plan_id,date_suscription) VALUES
+	 ('845eb227-5356-4169-9799-95a97ec5ce33'::uuid,'900200195','Logan IT','845eb227-5356-4169-9799-95a97ec5ce33'::uuid,'2024-10-12 00:00:00.000');
+
+
+INSERT INTO channel_plan (id,channel_id,plan_id) VALUES
+	 ('b1b4fc06-1c63-4d27-94ac-c49cc3f7228c'::uuid,'731d752e-27df-47f5-908a-6c5ad10c19e3'::uuid,'845eb227-5356-4169-9799-95a97ec5ce33'::uuid);
+
+INSERT INTO role (ID,NAME) VALUES('e4f78f9c-4e24-4588-9315-92dd601c8caa','Agent');
+INSERT INTO role (ID,NAME) VALUES('beaa72b1-a7d3-4035-b4b3-bba0cd0c4d5d','User');
+INSERT INTO role (ID,NAME) VALUES('9a2a6082-77ff-4056-8305-77c38d839c29','Company Admin');
+
+ 
+
+INSERT INTO auth_user (id,name,last_name,phone_number,email,address,birthdate,password,role_id, salt) VALUES ('090b9b2f-c79c-41c1-944b-9d57cca4d582','MIGUEL','TOVAR','55555555','miguel@yopmail.com','Calle luna','1983-05-23','gAAAAABnNpKVXQat4aPCPSGjMTpY0vYYTGFJRDTt-A9-12qLJv_U1rOunGqPtivEBwNSCMjKLCPepJ5DK6EcYHAO8aK91bBX7Q==','beaa72b1-a7d3-4035-b4b3-bba0cd0c4d5d', 'bpc/IFyEaS7UdhPTLI4xmw==');
+INSERT INTO auth_user (id,name,last_name,phone_number,email,address,birthdate,password,role_id, salt) VALUES ('e120f5a3-9444-48b6-88b0-26e2a21b1957','DANNA','LOPEZ','55555555','danna@yopmail.com','Calle luna','1983-11-19','gAAAAABnNpd54AkRkKppD0iGskbDo70fJE47HLxMUvkesweoaIXJ7bj0voxoL4vxSXl1A4fAuHgUWxppISk9yX7chTZ_NFhmpA==','e4f78f9c-4e24-4588-9315-92dd601c8caa', '23AYZCU1kJyuujh6mok0BA==');
+INSERT INTO auth_user (id,name,last_name,phone_number,email,address,birthdate,password,role_id, salt) VALUES ('5f76c81f-872a-4ea8-8979-f06636264b66','DinoGeek','Company','11111111','abcall@dinogeek.com','Venezuela','2021-05-23','gAAAAABnNpgT8omQpcl0DrSiD14Qv_e5C5SU9z00HKSFq-T2g6AzaLqL4bI6vxR6zJCZtoSUhMkAgD8A0EcElNVtMZPh8YfLHQ==','9a2a6082-77ff-4056-8305-77c38d839c29', '5hiiEEPyBpy0LoMfBgPOWw==');
+
+
+INSERT INTO auth_user_customer (id,auth_user_id,customer_id) VALUES
+	 ('555aac64-c527-4810-bf99-93b539172218'::uuid,'090b9b2f-c79c-41c1-944b-9d57cca4d582'::uuid,'845eb227-5356-4169-9799-95a97ec5ce33'::uuid);
+
