@@ -36,6 +36,8 @@ class IssueView(Resource):
             return self.get_open_issues()
         elif action == 'getTopSevenIssues':
             return self.get_top_seven_issues()
+        elif action == 'getPredictedData':
+            return self.get_predicted_data()
         else:
             return {"message": "Action not found"}, 404
     
@@ -206,3 +208,18 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error ocurred trying to get top seven issues: {ex}')
                 return {"message": "Some error ocurred trying to get top seven issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+            
+    def get_predicted_data(self):
+        try:
+            self.logger.info('Receiving issue predicted data')
+
+            issues = self.issue_service.get_predicted_data()
+
+            if issues:
+                return issues, HTTPStatus.OK
+            
+            return {}, HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            self.logger.error(f'Some error ocurred trying to get predicted data: {ex}')
+            return {"message": "Some error ocurred trying to get predicted data"}, HTTPStatus.INTERNAL_SERVER_ERROR

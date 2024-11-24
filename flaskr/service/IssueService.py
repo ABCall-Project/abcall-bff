@@ -221,3 +221,19 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+        
+    
+    def get_predicted_data(self) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/getPredictedData'
+          
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
