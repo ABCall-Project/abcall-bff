@@ -18,7 +18,7 @@ class IssueView(Resource):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
-    @token_required
+    #@token_required
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
@@ -34,6 +34,8 @@ class IssueView(Resource):
             return self.get_all_issues()
         elif action == 'getOpenIssues':
             return self.get_open_issues()
+        elif action == 'getTopSevenIssues':
+            return self.get_top_seven_issues()
         else:
             return {"message": "Action not found"}, 404
     
@@ -188,3 +190,19 @@ class IssueView(Resource):
         except Exception as ex:
             self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')
             return {"message": "Some error ocurred trying to get issues by user id"}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+
+    def get_top_seven_issues(self):
+            try:
+                self.logger.info(f'Receiving issue top seven issues')
+
+                issues = self.issue_service.get_top_seven_issues()
+
+                if issues:
+                    return issues, HTTPStatus.OK
+                
+                return {}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error ocurred trying to get top seven issues: {ex}')
+                return {"message": "Some error ocurred trying to get top seven issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
