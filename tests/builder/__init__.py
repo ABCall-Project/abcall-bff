@@ -3,4 +3,7 @@ from .InvoicesDetailResponseBuilder import *
 from .IAResponseBuilder import *
 from .FindIssueBuilder import *
 from .IssueBuilder import *
+from .AuthBuilder import *
 from .InvoiceDataResponseBuilder import *
+from .CustomerUserRequestBuilder import *
+from .CustomerCreationResponseBuilder import *

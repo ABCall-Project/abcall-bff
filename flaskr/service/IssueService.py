@@ -155,3 +155,53 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+
+    def get_all_issues(self) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/getAllIssues'
+          
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
+
+    def assign_issue(self, issue_id:str, auth_user_agent_id:str) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/assignIssue?issue_id={issue_id}'
+            data = {"auth_user_agent_id": auth_user_agent_id}
+          
+            response = requests.post(url, json=data)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error assign_issue issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
+    
+    def get_open_issues(self, page:int, limit:int):
+        try:
+            url = f'{self.base_url}/issue/getOpenIssues'
+            params = {
+                'page': page,
+                'limit': limit
+            }
+            params = {key: value for key, value in params.items() if value is not None}
+            response = requests.get(url, params=params)
+
+            if response.status_code == HTTPStatus.OK:
+                return issues_pagination_mapper(response.json())
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e

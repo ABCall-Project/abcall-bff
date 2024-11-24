@@ -4,6 +4,7 @@ from flask import jsonify, request
 from http import HTTPStatus
 from ...service.IssueService import *
 import logging
+from ...middleware.AuthMiddleware import token_required
 
 class IssueView(Resource):
     """
@@ -17,7 +18,7 @@ class IssueView(Resource):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
-
+    @token_required
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
@@ -29,6 +30,16 @@ class IssueView(Resource):
             return self.get_ia_predictive_answer()
         elif action=='get_issue_by_id':
             return self.get_issue_detail()
+        elif action == 'getAllIssues':
+            return self.get_all_issues()
+        elif action == 'getOpenIssues':
+            return self.get_open_issues()
+        else:
+            return {"message": "Action not found"}, 404
+    
+    def post(self,action=None):
+        if action == 'assignIssue':
+            return self.assign_issue()
         else:
             return {"message": "Action not found"}, 404
 
@@ -126,3 +137,54 @@ class IssueView(Resource):
             except Exception as ex:
                 self.logger.error(f'Some error occurred trying to get issue detail: {ex}')
                 return {'message': 'Something went wrong trying to get issue detail'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def get_all_issues(self):
+            try:
+                user_id = request.args.get('user_id')
+                self.logger.info(f'Receiving issue list by user {user_id}')
+
+                issues = self.issue_service.get_all_issues()
+
+                if issues:
+                    return issues, HTTPStatus.OK
+                
+                return {}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error ocurred trying to get all issues: {ex}')
+                return {"message": "Some error ocurred trying to get all issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def assign_issue(self):
+            try:
+                self.logger.info(f'Receiving issue for  assign_issue')
+                issue_id = request.args.get('issue_id')
+                data = request.get_json()
+                auth_user_agent_id = data.get('auth_user_agent_id')
+                issues = self.issue_service.assign_issue(issue_id,auth_user_agent_id)
+                if issues:
+                    return issues, HTTPStatus.OK
+                
+                return {}, HTTPStatus.NOT_FOUND
+
+            except Exception as ex:
+                self.logger.error(f'Some error ocurred trying to assign_issue issues: {ex}')
+                return {"message": "Some error ocurred trying to assign_issue issues"}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def get_open_issues(self):
+        try:
+            page = int(request.args.get('page'))
+            limit = int(request.args.get('limit'))
+
+
+            self.logger.info(f'Receiving issue get_open_issues')
+
+            issues = self.issue_service.get_open_issues(page=page, limit=limit)
+
+            if issues:
+                return issues, HTTPStatus.OK
+            
+            return {}, HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            self.logger.error(f'Some error ocurred trying to get issues by user id: {ex}')
+            return {"message": "Some error ocurred trying to get issues by user id"}, HTTPStatus.INTERNAL_SERVER_ERROR
