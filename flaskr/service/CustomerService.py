@@ -68,10 +68,11 @@ class CustomerService:
             self.logger.info(f'Sending request to create customer at {self.base_url}/customer/create')
             payload = {
                 "name": name,
-                "plan_id": str(plan_id),
+                "plan_id": plan_id,
                 "document": document
             }
-            response = requests.post(f'{self.base_url}/customer/create', json=payload)
+
+            response = requests.post(f'{self.base_url}/customer/create', data=payload)
 
             if response.status_code == HTTPStatus.CREATED:
                 self.logger.info('Customer successfully created in Customer API')
