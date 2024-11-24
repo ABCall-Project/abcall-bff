@@ -18,7 +18,7 @@ class IssueView(Resource):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger('default')
 
-    #@token_required
+    @token_required
     def get(self, action=None):
         if action == 'getIAResponse':
             return self.getIAResponse()
