@@ -40,6 +40,8 @@ class IssueView(Resource):
             return self.assign_issue()
         elif action == 'createIssue':
             return self.create_issue()
+        elif action == 'processEmails':
+            return self.process_emails()
         else:
             return {"message": "Action not found"}, 404
 
@@ -207,3 +209,15 @@ class IssueView(Resource):
         except Exception as ex:
             self.logger.error(f"Error while creating issue: {ex}")
             return {"message": "Error creating issue"}, HTTPStatus.INTERNAL_SERVER_ERROR
+    
+    def process_emails(self):
+        """
+        Trigger email processing to create issues.
+        """
+        self.logger.info("Processing incoming emails for issues.")
+        try:
+            self.issue_service.process_incoming_emails()
+            return {"message": "Emails processed successfully."}, HTTPStatus.OK
+        except Exception as ex:
+            self.logger.error(f"Error processing emails: {ex}")
+            return {"message": "Error processing emails."}, HTTPStatus.INTERNAL_SERVER_ERROR

@@ -1,4 +1,6 @@
 from datetime import date
+from email import message_from_bytes
+import imaplib
 from typing import Optional
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
@@ -210,3 +212,69 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issues API: {str(e)}')
             raise e
+        
+    def process_incoming_emails(self):
+        """
+        Connect to Gmail, fetch emails, and create issues from them.
+        """
+        try:
+            # Configuración del servidor de correo
+            imap_server = os.environ.get('EMAIL_IMAP_SERVER', 'imap.gmail.com')
+            email_user = os.environ.get('EMAIL_USER')
+            self.logger.info(email_user)
+            email_pass = os.environ.get('EMAIL_PASS')
+            self.logger.info(email_pass)
+
+            # Validar configuraciones
+            if not (imap_server and email_user and email_pass):
+                self.logger.error("Missing email configuration in environment variables.")
+                return
+
+            # Conexión al servidor IMAP
+            mail = imaplib.IMAP4_SSL(imap_server)
+            mail.login(email_user, email_pass)
+            mail.select('inbox')
+
+            # Buscar correos no leídos
+            status, messages = mail.search(None, 'UNSEEN')
+            if status != "OK":
+                self.logger.error("Failed to search emails")
+                return
+
+            for num in messages[0].split():
+                status, data = mail.fetch(num, '(RFC822)')
+                for response_part in data:
+                    if isinstance(response_part, tuple):
+                        msg = message_from_bytes(response_part[1])
+                        subject = msg['subject']
+                        sender = msg['from']
+                        body = msg.get_payload(decode=True).decode('utf-8')
+
+                        issue_data = self.parse_email_to_issue(subject, body)
+
+                        self.create_issue(
+                            auth_user_id=issue_data['auth_user_id'],
+                            auth_user_agent_id=issue_data['auth_user_agent_id'],
+                            subject=issue_data['subject'],
+                            description=issue_data['description'],
+                            file_path=issue_data.get('file_path')
+                        )
+
+            mail.logout()
+            self.logger.info("Email processing completed.")
+
+        except Exception as e:
+            self.logger.error(f"Error processing emails: {str(e)}")
+            raise e
+
+    def parse_email_to_issue(self, subject, body):
+        """
+        Parse the email subject and body into issue data.
+        """
+        return {
+            "auth_user_id": "default_user",
+            "auth_user_agent_id": "default_agent",
+            "subject": subject,
+            "description": body,
+            "file_path": None 
+        }
