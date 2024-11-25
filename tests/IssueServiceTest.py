@@ -107,3 +107,44 @@ class IssueServiceTestCase(unittest.TestCase):
         with self.assertRaises(requests.exceptions.RequestException):
             issueService.assign_issue(issue_id, auth_user_agent_id)
 
+    @patch('requests.get')
+    def test_return_none_when_status_code_is_not_ok(self, get_mock):
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        issues = issueService.get_open_issues(page=1, limit=10)
+
+        self.assertIsNone(issues)
+    
+    @patch('requests.get')
+    def test_return_a_list_of_open_issue_for_pagination(self, get_mock):
+        issues = []
+        issue =  IssueBuilder().build()
+        issues.append(issue)
+        issue_mock = FindIssueBuilder().with_data(issues).build()
+        issueService = IssueService()
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK)
+        get_mock.return_value.json.return_value = issue_mock
+        expected_response = {
+            'hasNext': issue_mock['has_next'],
+            'totalPages': issue_mock['total_pages'],
+            'page': issue_mock['page'],
+            'limit': issue_mock['limit'],
+            'data': []
+        }
+
+        for issue in issue_mock['data']:
+            expected_response['data'].append({
+                "id": issue['id'],
+                "authUserId": issue['auth_user_id'],
+                "description": issue['description'],
+                "status": issue['status'],
+                "subject": issue['subject'],
+                "createdAt": issue['created_at'],
+                "closedAt": issue['closed_at'],
+                "channelPlanId": issue['channel_plan_id']
+            })
+
+        response = issueService.get_open_issues(page=1, limit=10)
+        self.assertEqual(response, expected_response)
+

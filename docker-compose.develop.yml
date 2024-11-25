@@ -13,14 +13,9 @@ services:
       - .env.local
     tty: true
     networks:
-      - bff_net
       - app_net
 
-
 networks:
-  bff_net:
-    name: bff_net
-    driver: bridge
   app_net:
     name: app_net
     driver: bridge

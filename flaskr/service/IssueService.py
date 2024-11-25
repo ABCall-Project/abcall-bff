@@ -188,6 +188,57 @@ class IssueService:
         except Exception as e:
             self.logger.error(f'Error communicating with issue service: {str(e)}')
             raise e
+    
+    def get_open_issues(self, page:int, limit:int):
+        try:
+            url = f'{self.base_url}/issue/getOpenIssues'
+            params = {
+                'page': page,
+                'limit': limit
+            }
+            params = {key: value for key, value in params.items() if value is not None}
+            response = requests.get(url, params=params)
+
+            if response.status_code == HTTPStatus.OK:
+                return issues_pagination_mapper(response.json())
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
+        
+
+    def get_top_seven_issues(self) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/getTopSevenIssues'
+          
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
+        
+    
+    def get_predicted_data(self) -> Optional[dict]:
+        try:
+            url = f'{self.base_url}/issue/getPredictedData'
+          
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+            else:
+                self.logger.error(f'Error querying issue service: {response.status_code}')
+                return None
+        except Exception as e:
+            self.logger.error(f'Error communicating with issue service: {str(e)}')
+            raise e
         
     def create_issue(self, auth_user_id: str, auth_user_agent_id: str, subject: str, description: str, file_path: Optional[str] = None) -> Optional[dict]:        
         try:
