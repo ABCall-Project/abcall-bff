@@ -10,3 +10,5 @@ data:
   URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008"
   ISSUE_API_PATH: "http://abcall-issues-api-service:3007"
   CUSTOMER_API_PATH: "http://abcall-customer-api-service:3003/"
+  AUTH_API_PATH: "http://abcall-auth-api-service:3004"
+  HOURS_TO_EXPIRE_SESSION: "1"
