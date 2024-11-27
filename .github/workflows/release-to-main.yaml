@@ -60,7 +60,7 @@ jobs:
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
           AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          DATABASE_URI: ${{ secrets.DATABASE_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           echo "Environment variables are set"
         
