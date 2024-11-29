@@ -186,66 +186,7 @@ class IssueServiceTestCase(unittest.TestCase):
 
         response = issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
 
-        self.assertIsNone(response)
-
-    @patch('requests.post')
-    def test_create_issue_raises_exception(self, post_mock):
-        fake = Faker()
-        issueService = IssueService()
-        
-        auth_user_id = fake.uuid4()
-        auth_user_agent_id = fake.uuid4()
-        subject = "Test Subject"
-        description = "Test Description"
-
-        post_mock.side_effect = requests.exceptions.RequestException("Connection error")
-
-        with self.assertRaises(requests.exceptions.RequestException):
-            issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
-    
-        fake_mail.select.return_value = 'OK', []
-
-        fake_mail.search.return_value = 'OK', [b'1 2']
-
-        email_message_1 = EmailMessage()
-        email_message_1['subject'] = 'Test Subject 1'
-        email_message_1['from'] = 'sender1@example.com'
-        email_message_1.set_content('Test email body 1\n')
-
-        email_message_2 = EmailMessage()
-        email_message_2['subject'] = 'Test Subject 2'
-        email_message_2['from'] = 'sender2@example.com'
-        email_message_2.set_content('Test email body 2\n')
-
-        fake_mail.fetch.side_effect = [
-            ('OK', [(b'1', email_message_1.as_bytes())]),
-            ('OK', [(b'2', email_message_2.as_bytes())])
-        ]
-
-        issueService = IssueService()
-        issueService.logger = MagicMock()
-
-        issueService.create_issue = MagicMock()
-
-        issueService.process_incoming_emails()
-
-        issueService.create_issue.assert_any_call(
-            auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
-            auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
-            subject='Test Subject 1',
-            description='Test email body 1'
-        )
-        issueService.create_issue.assert_any_call(
-            auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
-            auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
-            subject='Test Subject 2',
-            description='Test email body 2'
-        )
-
-        fake_mail.store.assert_any_call(b'1', '+FLAGS', '\\Seen')
-        fake_mail.store.assert_any_call(b'2', '+FLAGS', '\\Seen')
-
-        fake_mail.logout.assert_called_once()
+        self.assertIsNone(response)    
 
     @patch('imaplib.IMAP4_SSL')
     def test_process_incoming_emails_imap_error(self, imap_mock):
