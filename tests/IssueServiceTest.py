@@ -217,7 +217,7 @@ class IssueServiceTestCase(unittest.TestCase):
         email_message = EmailMessage()
         email_message['subject'] = 'Test Subject'
         email_message['from'] = 'sender@example.com'
-        email_message.set_content('Test email body')
+        email_message.set_content('Test email body\n')
         fake_mail.fetch.return_value = 'OK', [(b'1', email_message.as_bytes())]
 
         issueService = IssueService()
