@@ -236,7 +236,7 @@ class IssueServiceTestCase(unittest.TestCase):
             auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
             auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
             subject='Test Subject',
-            description='Test email body'
+            description='Test email body\n'
         )
 
         fake_mail.store.assert_called_with(b'1', '+FLAGS', '\\Seen')
