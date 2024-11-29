@@ -6,6 +6,7 @@ from flaskr import create_app
 from config import Config
 from .endpoint import HealthCheck,InvoiceView,ReportView,IssueView, CustomerDatabaseView,AuthUser, CustomerView
 from flask_cors import CORS
+import logging
 import newrelic.agent
 newrelic.agent.initialize('newrelic.ini')
 
@@ -14,7 +15,11 @@ config = Config()
 
 app = create_app('default')
 CORS(app)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('default')
 app.json_encoder = JSONCustomEncoder
+
+logger.info('starting application ...')
 
 app_context = app.app_context()
 app_context.push()
