@@ -252,3 +252,40 @@ class IssueServiceTestCase(unittest.TestCase):
         self.assertEqual(issue_data['auth_user_id'], "default_user")
         self.assertEqual(issue_data['auth_user_agent_id'], "default_agent")
         self.assertIsNone(issue_data['file_path'])
+
+    @patch('requests.get')
+    def test_get_top_seven_issues_success(self, get_mock):
+        issueService = IssueService()
+        
+        mock_response = {
+            "issues": [
+                {"id": "1", "subject": "Issue 1"},
+                {"id": "2", "subject": "Issue 2"},
+            ]
+        }
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK, json=MagicMock(return_value=mock_response))
+
+        response = issueService.get_top_seven_issues()
+
+        self.assertEqual(response, mock_response)
+
+
+    @patch('requests.get')
+    def test_get_top_seven_issues_error_status(self, get_mock):
+        issueService = IssueService()
+        
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        response = issueService.get_top_seven_issues()
+
+        self.assertIsNone(response)
+
+
+    @patch('requests.get')
+    def test_get_top_seven_issues_raises_exception(self, get_mock):
+        issueService = IssueService()
+        
+        get_mock.side_effect = requests.exceptions.RequestException("Connection error")
+
+        with self.assertRaises(requests.exceptions.RequestException):
+            issueService.get_top_seven_issues()
