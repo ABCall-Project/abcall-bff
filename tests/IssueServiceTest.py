@@ -289,3 +289,40 @@ class IssueServiceTestCase(unittest.TestCase):
 
         with self.assertRaises(requests.exceptions.RequestException):
             issueService.get_top_seven_issues()
+
+    @patch('requests.get')
+    def test_get_predicted_data_success(self, get_mock):
+        issueService = IssueService()
+        
+        mock_response = {
+            "predictions": [
+                {"id": "1", "score": 0.95},
+                {"id": "2", "score": 0.89},
+            ]
+        }
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.OK, json=MagicMock(return_value=mock_response))
+
+        response = issueService.get_predicted_data()
+
+        self.assertEqual(response, mock_response)
+
+
+    @patch('requests.get')
+    def test_get_predicted_data_error_status(self, get_mock):
+        issueService = IssueService()
+        
+        get_mock.return_value = MagicMock(status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        response = issueService.get_predicted_data()
+
+        self.assertIsNone(response)
+
+
+    @patch('requests.get')
+    def test_get_predicted_data_raises_exception(self, get_mock):
+        issueService = IssueService()
+        
+        get_mock.side_effect = requests.exceptions.RequestException("Connection error")
+
+        with self.assertRaises(requests.exceptions.RequestException):
+            issueService.get_predicted_data()
