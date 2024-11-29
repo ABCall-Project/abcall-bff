@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
-from CustomerDatabaseService import CustomerDatabaseService
+from flaskr.service.CustomerDatabaseService import CustomerDatabaseService
 
 
 class CustomerDatabaseServiceTest(unittest.TestCase):
