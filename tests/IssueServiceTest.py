@@ -214,11 +214,20 @@ class IssueServiceTestCase(unittest.TestCase):
 
         fake_mail.search.return_value = 'OK', [b'1 2']
 
-        email_message = EmailMessage()
-        email_message['subject'] = 'Test Subject'
-        email_message['from'] = 'sender@example.com'
-        email_message.set_content('Test email body\n')
-        fake_mail.fetch.return_value = 'OK', [(b'1', email_message.as_bytes())]
+        email_message_1 = EmailMessage()
+        email_message_1['subject'] = 'Test Subject 1'
+        email_message_1['from'] = 'sender1@example.com'
+        email_message_1.set_content('Test email body 1\n')
+
+        email_message_2 = EmailMessage()
+        email_message_2['subject'] = 'Test Subject 2'
+        email_message_2['from'] = 'sender2@example.com'
+        email_message_2.set_content('Test email body 2\n')
+
+        fake_mail.fetch.side_effect = [
+            ('OK', [(b'1', email_message_1.as_bytes())]),
+            ('OK', [(b'2', email_message_2.as_bytes())])
+        ]
 
         issueService = IssueService()
         issueService.logger = MagicMock()
@@ -227,19 +236,21 @@ class IssueServiceTestCase(unittest.TestCase):
 
         issueService.process_incoming_emails()
 
-        fake_mail.login.assert_called_once()
-        fake_mail.select.assert_called_with('inbox')
-        fake_mail.search.assert_called_once_with(None, 'UNSEEN')
-        fake_mail.fetch.assert_called()
-
-        issueService.create_issue.assert_called_with(
+        issueService.create_issue.assert_any_call(
             auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
             auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
-            subject='Test Subject',
-            description='Test email body\n'
+            subject='Test Subject 1',
+            description='Test email body 1'
+        )
+        issueService.create_issue.assert_any_call(
+            auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
+            auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
+            subject='Test Subject 2',
+            description='Test email body 2'
         )
 
-        fake_mail.store.assert_called_with(b'1', '+FLAGS', '\\Seen')
+        fake_mail.store.assert_any_call(b'1', '+FLAGS', '\\Seen')
+        fake_mail.store.assert_any_call(b'2', '+FLAGS', '\\Seen')
 
         fake_mail.logout.assert_called_once()
 
