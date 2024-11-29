@@ -51,6 +51,18 @@ class IssueView(Resource):
         else:
             return {"message": "Action not found"}, 404
 
+    def process_emails(self):
+        """
+        Trigger email processing to create issues.
+        """
+        self.logger.info("Processing incoming emails for issues.")
+        try:
+            self.issue_service.process_incoming_emails()
+            return {"message": "Emails processed successfully."}, HTTPStatus.OK
+        except Exception as ex:
+            self.logger.error(f"Error processing emails: {ex}")
+            return {"message": "Error processing emails."}, HTTPStatus.INTERNAL_SERVER_ERROR
+
     def getIAResponse(self):
         try:
             self.logger.info(f'Receive request to ask to open ai')
@@ -264,16 +276,4 @@ class IssueView(Resource):
 
         except Exception as ex:
             self.logger.error(f"Error while creating issue: {ex}")
-            return {"message": "Error creating issue"}, HTTPStatus.INTERNAL_SERVER_ERROR
-    
-    def process_emails(self):
-        """
-        Trigger email processing to create issues.
-        """
-        self.logger.info("Processing incoming emails for issues.")
-        try:
-            self.issue_service.process_incoming_emails()
-            return {"message": "Emails processed successfully."}, HTTPStatus.OK
-        except Exception as ex:
-            self.logger.error(f"Error processing emails: {ex}")
-            return {"message": "Error processing emails."}, HTTPStatus.INTERNAL_SERVER_ERROR
+            return {"message": "Error creating issue"}, HTTPStatus.INTERNAL_SERVER_ERROR    
