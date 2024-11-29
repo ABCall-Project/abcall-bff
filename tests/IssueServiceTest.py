@@ -148,3 +148,57 @@ class IssueServiceTestCase(unittest.TestCase):
         response = issueService.get_open_issues(page=1, limit=10)
         self.assertEqual(response, expected_response)
 
+    @patch('requests.post')
+    def test_create_issue_success(self, post_mock):
+        fake = Faker()
+        issueService = IssueService()
+        
+        auth_user_id = fake.uuid4()
+        auth_user_agent_id = fake.uuid4()
+        subject = "Test Subject"
+        description = "Test Description"
+
+        mock_response = {
+            "id": fake.uuid4(),
+            "auth_user_id": auth_user_id,
+            "auth_user_agent_id": auth_user_agent_id,
+            "subject": subject,
+            "description": description,
+            "created_at": "2024-11-28T10:00:00Z",
+        }
+        post_mock.return_value = MagicMock(status_code=HTTPStatus.CREATED, json=MagicMock(return_value=mock_response))
+
+        response = issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+        self.assertEqual(response, mock_response)
+
+    @patch('requests.post')
+    def test_create_issue_error_status_code(self, post_mock):
+        fake = Faker()
+        issueService = IssueService()
+        
+        auth_user_id = fake.uuid4()
+        auth_user_agent_id = fake.uuid4()
+        subject = "Test Subject"
+        description = "Test Description"
+
+        post_mock.return_value = MagicMock(status_code=HTTPStatus.BAD_REQUEST, text="Invalid data")
+
+        response = issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+        self.assertIsNone(response)
+
+    @patch('requests.post')
+    def test_create_issue_raises_exception(self, post_mock):
+        fake = Faker()
+        issueService = IssueService()
+        
+        auth_user_id = fake.uuid4()
+        auth_user_agent_id = fake.uuid4()
+        subject = "Test Subject"
+        description = "Test Description"
+
+        post_mock.side_effect = requests.exceptions.RequestException("Connection error")
+
+        with self.assertRaises(requests.exceptions.RequestException):
+            issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
