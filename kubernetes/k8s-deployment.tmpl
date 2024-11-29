@@ -20,6 +20,13 @@ spec:
       containers:
         - name:  abcall-bff
           image: abcall.azurecr.io/abcall-bff:{{IMAGE_TAG}}
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
           env:
             - name: "FLASK_APP"
               valueFrom:
