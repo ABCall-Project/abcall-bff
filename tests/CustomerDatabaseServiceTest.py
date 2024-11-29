@@ -1,13 +1,14 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
+import os
 from flaskr.service.CustomerDatabaseService import CustomerDatabaseService
 
 
 class CustomerDatabaseServiceTest(unittest.TestCase):
     
-    @patch('CustomerDatabaseService.requests.post')
-    @patch('CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
+    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('flaskr.service.CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
     def test_load_entries_success(self, mock_env, mock_post):
         """
         Test successful entry loading into the customer database.
@@ -34,8 +35,8 @@ class CustomerDatabaseServiceTest(unittest.TestCase):
         )
         self.assertEqual(result, {"message": "Entries loaded successfully"})
 
-    @patch('CustomerDatabaseService.requests.post')
-    @patch('CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
+    @patch('flaskr.service.CustomerDatabaseService.requests.post')
+    @patch('flaskr.service.CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
     def test_load_entries_error_response(self, mock_env, mock_post):
         """
         Test handling of an error response from the API.
@@ -48,6 +49,7 @@ class CustomerDatabaseServiceTest(unittest.TestCase):
         ]
         mock_response = MagicMock()
         mock_response.status_code = 400
+        mock_response.json.return_value = None
         mock_post.return_value = mock_response
 
         # Act
@@ -60,8 +62,8 @@ class CustomerDatabaseServiceTest(unittest.TestCase):
         )
         self.assertIsNone(result)
 
-    @patch('CustomerDatabaseService.requests.post', side_effect=Exception("Network error"))
-    @patch('CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
+    @patch('flaskr.service.CustomerDatabaseService.requests.post', side_effect=Exception("Network error"))
+    @patch('flaskr.service.CustomerDatabaseService.os.environ.get', return_value='http://mock-api')
     def test_load_entries_exception(self, mock_env, mock_post):
         """
         Test handling of an exception during the API call.
