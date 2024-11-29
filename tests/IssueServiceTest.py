@@ -1,13 +1,13 @@
 from http import HTTPStatus
 import unittest
+import imaplib
+from email.message import EmailMessage
 from unittest.mock import patch, MagicMock, Mock
 from faker import Faker
 from builder import FindIssueBuilder
 from flaskr.service.IssueService import IssueService
 from tests.builder import IssueBuilder
 import requests
-
-
 
 class IssueServiceTestCase(unittest.TestCase):
     @patch('requests.get')
