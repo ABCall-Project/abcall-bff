@@ -189,27 +189,20 @@ class IssueServiceTestCase(unittest.TestCase):
         self.assertIsNone(response)
 
     @patch('requests.post')
-    def test_create_issue_raises_exception(self, post_mock):
-        fake = Faker()
-        issueService = IssueService()
+        def test_create_issue_raises_exception(self, post_mock):
+            fake = Faker()
+            issueService = IssueService()
+            
+            auth_user_id = fake.uuid4()
+            auth_user_agent_id = fake.uuid4()
+            subject = "Test Subject"
+            description = "Test Description"
+
+            post_mock.side_effect = requests.exceptions.RequestException("Connection error")
+
+            with self.assertRaises(requests.exceptions.RequestException):
+                issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
         
-        auth_user_id = fake.uuid4()
-        auth_user_agent_id = fake.uuid4()
-        subject = "Test Subject"
-        description = "Test Description"
-
-        post_mock.side_effect = requests.exceptions.RequestException("Connection error")
-
-        with self.assertRaises(requests.exceptions.RequestException):
-            issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
-
-    @patch('imaplib.IMAP4_SSL')
-    def test_process_incoming_emails_success(self, imap_mock):
-        fake_mail = MagicMock()
-        imap_mock.return_value = fake_mail
-
-        fake_mail.login.return_value = 'OK', []
-
         fake_mail.select.return_value = 'OK', []
 
         fake_mail.search.return_value = 'OK', [b'1 2']
