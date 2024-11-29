@@ -84,6 +84,102 @@ class CustomerDatabaseServiceTest(unittest.TestCase):
         )
         self.assertIsNone(result)
 
+    @patch('requests.post')
+    def test_create_issue_success(self, mock_post):
+        """
+        Test successful creation of an issue.
+        """
+        # Arrange
+        url = f'{self.issue_service.base_url}/issue/post'
+        auth_user_id = "12345678-1234-5678-1234-567812345678"
+        auth_user_agent_id = "87654321-4321-8765-4321-876543218765"
+        subject = "Test Issue"
+        description = "This is a test issue description."
+        mock_response = MagicMock(status_code=HTTPStatus.CREATED)
+        mock_response.json.return_value = {
+            "id": "09876543-2109-8765-4321-098765432109",
+            "auth_user_id": auth_user_id,
+            "auth_user_agent_id": auth_user_agent_id,
+            "subject": subject,
+            "description": description
+        }
+        mock_post.return_value = mock_response
+
+        # Act
+        result = self.issue_service.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+        # Assert
+        self.assertEqual(result, mock_response.json())
+        mock_post.assert_called_once_with(
+            url,
+            data={
+                "auth_user_id": auth_user_id,
+                "auth_user_agent_id": auth_user_agent_id,
+                "subject": subject,
+                "description": description,
+            },
+            files=None
+        )
+
+    @patch('requests.post')
+    def test_create_issue_failure(self, mock_post):
+        """
+        Test failure to create an issue when the API returns a non-201 status code.
+        """
+        # Arrange
+        url = f'{self.issue_service.base_url}/issue/post'
+        auth_user_id = "12345678-1234-5678-1234-567812345678"
+        auth_user_agent_id = "87654321-4321-8765-4321-876543218765"
+        subject = "Test Issue"
+        description = "This is a test issue description."
+        mock_response = MagicMock(status_code=HTTPStatus.BAD_REQUEST)
+        mock_response.text = "Invalid request"
+        mock_post.return_value = mock_response
+
+        # Act
+        result = self.issue_service.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+        # Assert
+        self.assertIsNone(result)
+        mock_post.assert_called_once_with(
+            url,
+            data={
+                "auth_user_id": auth_user_id,
+                "auth_user_agent_id": auth_user_agent_id,
+                "subject": subject,
+                "description": description,
+            },
+            files=None
+        )
+
+    @patch('requests.post')
+    def test_create_issue_exception(self, mock_post):
+        """
+        Test handling of exceptions during issue creation.
+        """
+        # Arrange
+        url = f'{self.issue_service.base_url}/issue/post'
+        auth_user_id = "12345678-1234-5678-1234-567812345678"
+        auth_user_agent_id = "87654321-4321-8765-4321-876543218765"
+        subject = "Test Issue"
+        description = "This is a test issue description."
+        mock_post.side_effect = requests.exceptions.RequestException("Connection error")
+
+        # Act & Assert
+        with self.assertRaises(requests.exceptions.RequestException):
+            self.issue_service.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+        mock_post.assert_called_once_with(
+            url,
+            data={
+                "auth_user_id": auth_user_id,
+                "auth_user_agent_id": auth_user_agent_id,
+                "subject": subject,
+                "description": description,
+            },
+            files=None
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
