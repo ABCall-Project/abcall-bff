@@ -6,6 +6,9 @@ from flaskr import create_app
 from config import Config
 from .endpoint import HealthCheck,InvoiceView,ReportView,IssueView, CustomerDatabaseView,AuthUser, CustomerView
 from flask_cors import CORS
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
+
 
 config = Config()
 
