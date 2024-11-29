@@ -1,7 +1,7 @@
 import unittest
 from uuid import UUID, uuid4
 from datetime import datetime
-from CustomerDatabase import CustomerDatabase
+from app.service.CustomerDatabase import CustomerDatabase
 
 
 class CustomerDatabaseTest(unittest.TestCase):
