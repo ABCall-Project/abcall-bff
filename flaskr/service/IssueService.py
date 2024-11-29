@@ -278,8 +278,7 @@ class IssueService:
                 mail = imaplib.IMAP4_SSL(imap_server, 993)
                 mail.login(email_user, email_pass)
             except imaplib.IMAP4.error as e:
-                self.logger.error("IMAP login failed. Check credentials or account status.")
-                self.logger.error("Arrojo un error o que?")
+                self.logger.error("IMAP login failed. Check credentials or account status.")                
                 return
 
             mail.select('inbox')
