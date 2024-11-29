@@ -7,4 +7,3 @@ flask-cors
 Flask-Testing
 Faker
 PyJWT
-newrelic
