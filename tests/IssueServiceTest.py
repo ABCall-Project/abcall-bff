@@ -202,3 +202,92 @@ class IssueServiceTestCase(unittest.TestCase):
 
         with self.assertRaises(requests.exceptions.RequestException):
             issueService.create_issue(auth_user_id, auth_user_agent_id, subject, description)
+
+    @patch('imaplib.IMAP4_SSL')
+    def test_process_incoming_emails_success(self, imap_mock):
+        fake_mail = MagicMock()
+        imap_mock.return_value = fake_mail
+
+        fake_mail.login.return_value = 'OK', []
+
+        fake_mail.select.return_value = 'OK', []
+
+        fake_mail.search.return_value = 'OK', [b'1 2']
+
+        email_message = EmailMessage()
+        email_message['subject'] = 'Test Subject'
+        email_message['from'] = 'sender@example.com'
+        email_message.set_content('Test email body')
+        fake_mail.fetch.return_value = 'OK', [(b'1', email_message.as_bytes())]
+
+        issueService = IssueService()
+        issueService.logger = MagicMock()
+
+        issueService.create_issue = MagicMock()
+
+        issueService.process_incoming_emails()
+
+        fake_mail.login.assert_called_once()
+        fake_mail.select.assert_called_with('inbox')
+        fake_mail.search.assert_called_once_with(None, 'UNSEEN')
+        fake_mail.fetch.assert_called()
+
+        issueService.create_issue.assert_called_with(
+            auth_user_id='090b9b2f-c79c-41c1-944b-9d57cca4d582',
+            auth_user_agent_id='e120f5a3-9444-48b6-88b0-26e2a21b1957',
+            subject='Test Subject',
+            description='Test email body'
+        )
+
+        fake_mail.store.assert_called_with(b'1', '+FLAGS', '\\Seen')
+
+        fake_mail.logout.assert_called_once()
+
+    @patch('imaplib.IMAP4_SSL')
+    def test_process_incoming_emails_imap_error(self, imap_mock):
+        fake_mail = MagicMock()
+        imap_mock.return_value = fake_mail
+        fake_mail.login.side_effect = imaplib.IMAP4.error("Login failed")
+
+        issueService = IssueService()
+        issueService.logger = MagicMock()
+
+        issueService.process_incoming_emails()
+
+        issueService.logger.error.assert_called_with("IMAP login failed. Check credentials or account status.")
+
+        fake_mail.select.assert_not_called()
+        fake_mail.search.assert_not_called()
+
+    @patch('imaplib.IMAP4_SSL')
+    def test_process_incoming_emails_fetch_error(self, imap_mock):
+        fake_mail = MagicMock()
+        imap_mock.return_value = fake_mail
+
+        fake_mail.login.return_value = 'OK', []
+        fake_mail.select.return_value = 'OK', []
+
+        fake_mail.search.return_value = 'OK', [b'1']
+
+        fake_mail.fetch.return_value = 'NO', []
+
+        issueService = IssueService()
+        issueService.logger = MagicMock()
+
+        issueService.process_incoming_emails()
+
+        issueService.logger.warning.assert_called_with("Failed to fetch email ID b'1'. Skipping.")
+
+    def test_parse_email_to_issue(self):
+        issueService = IssueService()
+
+        subject = "Test Email Subject"
+        body = "This is the body of the email."
+
+        issue_data = issueService.parse_email_to_issue(subject, body)
+
+        self.assertEqual(issue_data['subject'], subject)
+        self.assertEqual(issue_data['description'], body)
+        self.assertEqual(issue_data['auth_user_id'], "default_user")
+        self.assertEqual(issue_data['auth_user_agent_id'], "default_agent")
+        self.assertIsNone(issue_data['file_path'])
