@@ -282,7 +282,7 @@ class IssueServiceTestCase(unittest.TestCase):
         issueService = IssueService()
 
         subject = "Test Email Subject"
-        body = body.strip()
+        body = "This is the body of the email."
 
         issue_data = issueService.parse_email_to_issue(subject, body)
 
